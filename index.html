@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Atrium Announcements</title>
+  <title>Atrium Slides</title>
   <style>
     html, body {
       margin: 0;
@@ -11,46 +11,53 @@
       background: #000;
       overflow: hidden;
     }
+
     #stage {
-      width: 100vw;
-      height: 100vh;
-      display: grid;
-      place-items: center;
+      position: fixed;
+      inset: 0;
+      background: #000;
     }
-    img {
+
+    .layer {
+      position: absolute;
+      inset: 0;
       width: 100vw;
       height: 100vh;
-      object-fit: contain; /* use 'cover' if you want full-bleed */
-      image-rendering: auto;
+      object-fit: contain; /* change to 'cover' if you want full-bleed */
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out; /* fade duration */
+      will-change: opacity;
+    }
+
+    .show {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
   <div id="stage">
-    <img id="slide" alt="Announcements Slide" />
+    <img id="imgA" class="layer show" alt="Slide A">
+    <img id="imgB" class="layer" alt="Slide B">
   </div>
 
   <script>
-    // ---- CONFIG ----
+    // ===== SETTINGS =====
     const SLIDE_FOLDER = "slides";
-    const MAX_SLIDES = 40;          // how many slideXX.jpg you might have
-    const SECONDS_PER_SLIDE = 10;   // change timing here
-    const EXT = "jpg";              // jpg / png
+    const EXT = "jpg";              // jpg or png
     const PAD = 2;                  // slide01, slide02...
+    const MAX_SLIDES = 60;          // adjust if needed
+    const SECONDS_PER_SLIDE = 10;   // your request
+    const FADE_SECONDS = 1.2;       // match CSS transition above
 
-    // Cache-bust so OBS/Chromium doesn't keep showing last week's images.
-    // Change WEEK_TAG manually if you ever need to force-refresh instantly.
-    // Tip: set WEEK_TAG to a date like "2026-01-22".
-    const WEEK_TAG = new Date().toISOString().slice(0,10); // daily refresh; safe & simple
-
-    // Optional: reload the whole page occasionally (helps long-running signage PCs)
-    const PAGE_RELOAD_MINUTES = 120;
+    // Cache-bust so OBS/Chromium pulls the newest images after you overwrite weekly.
+    // If you ever need to force-refresh instantly, set CACHE_TAG to a new value like "2026-01-22a".
+    const CACHE_TAG = new Date().toISOString().slice(0,10);
 
     function slideName(i) {
       return `slide${String(i).padStart(PAD, "0")}.${EXT}`;
     }
 
-    async function fileExists(url) {
+    async function exists(url) {
       try {
         const res = await fetch(url, { method: "HEAD", cache: "no-store" });
         return res.ok;
@@ -59,49 +66,65 @@
       }
     }
 
-    async function buildSlides() {
-      // Auto-detect slide01..slideXX until we hit a missing file.
-      const list = [];
+    async function detectSlides() {
+      const found = [];
       for (let i = 1; i <= MAX_SLIDES; i++) {
-        const url = `${SLIDE_FOLDER}/${slideName(i)}?v=${encodeURIComponent(WEEK_TAG)}`;
-        // If slide01 is missing, nothing will play—so this keeps you honest.
-        if (await fileExists(url)) list.push(url);
-        else break;
+        const url = `${SLIDE_FOLDER}/${slideName(i)}?v=${encodeURIComponent(CACHE_TAG)}`;
+        if (await exists(url)) found.push(url);
+        else break; // stop at first missing (keeps it simple)
       }
-      return list;
+      return found;
+    }
+
+    function preload(url) {
+      const img = new Image();
+      img.src = url;
     }
 
     (async () => {
-      const img = document.getElementById("slide");
-      const slides = await buildSlides();
+      const slides = await detectSlides();
+      if (!slides.length) return;
 
-      if (!slides.length) {
-        console.warn("No slides found. Make sure slides/slide01.jpg exists.");
-        // Show a black screen (or you could set a fallback image here).
-        img.removeAttribute("src");
-        return;
-      }
+      const imgA = document.getElementById("imgA");
+      const imgB = document.getElementById("imgB");
 
+      let front = imgA;
+      let back  = imgB;
       let idx = 0;
 
-      function show(i) {
-        // Preload next slide for smoother transitions
-        const next = new Image();
-        next.src = slides[(i + 1) % slides.length];
+      // Initial load
+      front.src = slides[idx];
+      preload(slides[(idx + 1) % slides.length]);
 
-        img.src = slides[i];
-      }
-
-      show(idx);
+      const intervalMs = SECONDS_PER_SLIDE * 1000;
 
       setInterval(() => {
-        idx = (idx + 1) % slides.length;
-        show(idx);
-      }, SECONDS_PER_SLIDE * 1000);
+        const nextIdx = (idx + 1) % slides.length;
+        const nextUrl = slides[nextIdx];
 
-      if (PAGE_RELOAD_MINUTES > 0) {
-        setTimeout(() => location.reload(), PAGE_RELOAD_MINUTES * 60 * 1000);
-      }
+        // Load next slide in the back layer
+        back.src = nextUrl;
+
+        // Force a reflow so the browser applies the src before fading (helps OBS Chromium)
+        back.getBoundingClientRect();
+
+        // Fade in back, fade out front
+        back.classList.add("show");
+        front.classList.remove("show");
+
+        // Swap layers after fade completes
+        setTimeout(() => {
+          const temp = front;
+          front = back;
+          back = temp;
+
+          idx = nextIdx;
+
+          // Preload the next-next slide
+          preload(slides[(idx + 1) % slides.length]);
+        }, FADE_SECONDS * 1000 + 50);
+
+      }, intervalMs);
     })();
   </script>
 </body>
