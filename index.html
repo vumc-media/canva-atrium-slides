@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atrium Announcements</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    #stage {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+    img {
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain; /* use 'cover' if you want full-bleed */
+      image-rendering: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <img id="slide" alt="Announcements Slide" />
+  </div>
+
+  <script>
+    // ---- CONFIG ----
+    const SLIDE_FOLDER = "slides";
+    const MAX_SLIDES = 40;          // how many slideXX.jpg you might have
+    const SECONDS_PER_SLIDE = 10;   // change timing here
+    const EXT = "jpg";              // jpg / png
+    const PAD = 2;                  // slide01, slide02...
+
+    // Cache-bust so OBS/Chromium doesn't keep showing last week's images.
+    // Change WEEK_TAG manually if you ever need to force-refresh instantly.
+    // Tip: set WEEK_TAG to a date like "2026-01-22".
+    const WEEK_TAG = new Date().toISOString().slice(0,10); // daily refresh; safe & simple
+
+    // Optional: reload the whole page occasionally (helps long-running signage PCs)
+    const PAGE_RELOAD_MINUTES = 120;
+
+    function slideName(i) {
+      return `slide${String(i).padStart(PAD, "0")}.${EXT}`;
+    }
+
+    async function fileExists(url) {
+      try {
+        const res = await fetch(url, { method: "HEAD", cache: "no-store" });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    }
+
+    async function buildSlides() {
+      // Auto-detect slide01..slideXX until we hit a missing file.
+      const list = [];
+      for (let i = 1; i <= MAX_SLIDES; i++) {
+        const url = `${SLIDE_FOLDER}/${slideName(i)}?v=${encodeURIComponent(WEEK_TAG)}`;
+        // If slide01 is missing, nothing will play—so this keeps you honest.
+        if (await fileExists(url)) list.push(url);
+        else break;
+      }
+      return list;
+    }
+
+    (async () => {
+      const img = document.getElementById("slide");
+      const slides = await buildSlides();
+
+      if (!slides.length) {
+        console.warn("No slides found. Make sure slides/slide01.jpg exists.");
+        // Show a black screen (or you could set a fallback image here).
+        img.removeAttribute("src");
+        return;
+      }
+
+      let idx = 0;
+
+      function show(i) {
+        // Preload next slide for smoother transitions
+        const next = new Image();
+        next.src = slides[(i + 1) % slides.length];
+
+        img.src = slides[i];
+      }
+
+      show(idx);
+
+      setInterval(() => {
+        idx = (idx + 1) % slides.length;
+        show(idx);
+      }, SECONDS_PER_SLIDE * 1000);
+
+      if (PAGE_RELOAD_MINUTES > 0) {
+        setTimeout(() => location.reload(), PAGE_RELOAD_MINUTES * 60 * 1000);
+      }
+    })();
+  </script>
+</body>
+</html>
