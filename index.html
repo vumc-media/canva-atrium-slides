@@ -13,18 +13,29 @@
       overflow: hidden;
     }
 
-    #stage {
+    /* ===== BLACK BORDER FRAME ===== */
+    #frame {
       position: fixed;
       inset: 0;
+      background: black;
+      padding: 24px;              /* 🔧 border thickness */
+      box-sizing: border-box;
+    }
+
+    /* ===== SLIDESHOW AREA ===== */
+    #stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
       background: black;
     }
 
     .slide {
       position: absolute;
       inset: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: contain; /* change to cover if desired */
+      width: 100%;
+      height: 100%;
+      object-fit: contain;        /* change to 'cover' if desired */
       opacity: 0;
       transition: opacity 1.2s ease-in-out;
     }
@@ -36,20 +47,22 @@
 </head>
 
 <body>
-  <div id="stage">
-    <img id="imgA" class="slide active" alt="">
-    <img id="imgB" class="slide" alt="">
+  <div id="frame">
+    <div id="stage">
+      <img id="imgA" class="slide active" alt="">
+      <img id="imgB" class="slide" alt="">
+    </div>
   </div>
 
   <script>
-    // ===== SETTINGS =====
+    /* ===== SETTINGS ===== */
     const SLIDE_FOLDER = "slides";
     const EXT = "jpg";
     const MAX_SLIDES = 60;
     const SECONDS_PER_SLIDE = 10;
     const FADE_SECONDS = 1.2;
 
-    // Cache-busting so overwriting images updates everywhere
+    // Cache-busting so overwriting files updates automatically
     const CACHE_TAG = new Date().toISOString().slice(0,10);
 
     const imgA = document.getElementById("imgA");
@@ -68,7 +81,7 @@
     }
 
     (async () => {
-      // Find first valid slide
+      // Find first available slide
       let current = null;
       for (let i = 1; i <= MAX_SLIDES; i++) {
         if (await loadImage(imgA, slideUrl(i))) {
