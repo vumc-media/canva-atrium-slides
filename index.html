@@ -1,128 +1,121 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Atrium Slides</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>Atrium Slides</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: black;
-      overflow: hidden;
-    }
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  background: black;
+  overflow: hidden;
+}
 
-    /* ===== BLACK BORDER FRAME ===== */
-    #frame {
-      position: fixed;
-      inset: 0;
-      background: black;
-      padding: 24px;              /* 🔧 border thickness */
-      box-sizing: border-box;
-    }
+/* ===== SLIDESHOW AREA ===== */
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+}
 
-    /* ===== SLIDESHOW AREA ===== */
-    #stage {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: black;
-    }
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* change to 'cover' if you want edge-to-edge fill */
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
 
-    .slide {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;        /* change to 'cover' if desired */
-      opacity: 0;
-      transition: opacity 1.2s ease-in-out;
-    }
-
-    .active {
-      opacity: 1;
-    }
-  </style>
+.active {
+  opacity: 1;
+}
+</style>
 </head>
 
 <body>
-  <div id="frame">
-    <div id="stage">
-      <img id="imgA" class="slide active" alt="">
-      <img id="imgB" class="slide" alt="">
-    </div>
-  </div>
 
-  <script>
-    /* ===== SETTINGS ===== */
-    const SLIDE_FOLDER = "slides";
-    const EXT = "jpg";
-    const MAX_SLIDES = 60;
-    const SECONDS_PER_SLIDE = 10;
-    const FADE_SECONDS = 1.2;
+<div id="stage">
+  <img id="imgA" class="slide active" alt="">
+  <img id="imgB" class="slide" alt="">
+</div>
 
-    // Cache-busting so overwriting files updates automatically
-    const CACHE_TAG = new Date().toISOString().slice(0,10);
+<script>
+/* ===== SETTINGS ===== */
+const SLIDE_FOLDER = "slides";
+const EXT = "jpg";
+const MAX_SLIDES = 60;
+const SECONDS_PER_SLIDE = 10;
+const FADE_SECONDS = 1.2;
 
-    const imgA = document.getElementById("imgA");
-    const imgB = document.getElementById("imgB");
+// Cache-busting so overwriting files updates automatically
+const CACHE_TAG = new Date().toISOString().slice(0,10);
 
-    function slideUrl(n) {
-      return `${SLIDE_FOLDER}/slide${n}.${EXT}?v=${CACHE_TAG}`;
+const imgA = document.getElementById("imgA");
+const imgB = document.getElementById("imgB");
+
+function slideUrl(n) {
+  return `${SLIDE_FOLDER}/slide${n}.${EXT}?v=${CACHE_TAG}`;
+}
+
+function loadImage(img, url) {
+  return new Promise(resolve => {
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+}
+
+(async () => {
+  let current = null;
+
+  for (let i = 1; i <= MAX_SLIDES; i++) {
+    if (await loadImage(imgA, slideUrl(i))) {
+      current = i;
+      break;
+    }
+  }
+
+  if (current === null) {
+    console.warn("No slides found in /slides/");
+    return;
+  }
+
+  let front = imgA;
+  let back  = imgB;
+
+  async function advance() {
+    let next = null;
+
+    for (let step = 1; step <= MAX_SLIDES; step++) {
+      const candidate = ((current - 1 + step) % MAX_SLIDES) + 1;
+
+      if (await loadImage(back, slideUrl(candidate))) {
+        next = candidate;
+        break;
+      }
     }
 
-    function loadImage(img, url) {
-      return new Promise(resolve => {
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = url;
-      });
-    }
+    if (next === null) return;
 
-    (async () => {
-      // Find first available slide
-      let current = null;
-      for (let i = 1; i <= MAX_SLIDES; i++) {
-        if (await loadImage(imgA, slideUrl(i))) {
-          current = i;
-          break;
-        }
-      }
+    back.getBoundingClientRect();
+    back.classList.add("active");
+    front.classList.remove("active");
 
-      if (current === null) {
-        console.warn("No slides found in /slides/");
-        return;
-      }
+    setTimeout(() => {
+      [front, back] = [back, front];
+      current = next;
+    }, FADE_SECONDS * 1000 + 50);
+  }
 
-      let front = imgA;
-      let back  = imgB;
+  setInterval(advance, SECONDS_PER_SLIDE * 1000);
+})();
+</script>
 
-      async function advance() {
-        let next = null;
-
-        for (let step = 1; step <= MAX_SLIDES; step++) {
-          const candidate = ((current - 1 + step) % MAX_SLIDES) + 1;
-          if (await loadImage(back, slideUrl(candidate))) {
-            next = candidate;
-            break;
-          }
-        }
-
-        if (next === null) return;
-
-        back.getBoundingClientRect(); // force reflow
-        back.classList.add("active");
-        front.classList.remove("active");
-
-        setTimeout(() => {
-          [front, back] = [back, front];
-          current = next;
-        }, FADE_SECONDS * 1000 + 50);
-      }
-
-      setInterval(advance, SECONDS_PER_SLIDE * 1000);
-    })();
-  </script>
 </body>
 </html>
