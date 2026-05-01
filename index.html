@@ -31,32 +31,45 @@ html, body {
   transition: opacity 1.2s ease-in-out;
 }
 
-.active {
+.slide.active {
   opacity: 1;
 }
 
-/* ===== MANUAL ARROWS ===== */
+/* Invisible edge zones */
+.hover-zone {
+  position: fixed;
+  top: 0;
+  width: 18%;
+  height: 100%;
+  z-index: 9;
+}
+
+.hover-zone.left {
+  left: 0;
+}
+
+.hover-zone.right {
+  right: 0;
+}
+
+/* Arrows hidden by default */
 .arrow {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  width: 70px;
-  height: 110px;
+  width: 78px;
+  height: 120px;
   border: none;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.22);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.25);
   color: white;
-  font-size: 58px;
+  font-size: 62px;
   line-height: 1;
   cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 0.2s ease, background 0.2s ease;
-}
-
-.arrow:hover {
-  opacity: 0.9;
-  background: rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, background 0.25s ease;
 }
 
 .arrow-left {
@@ -65,6 +78,32 @@ html, body {
 
 .arrow-right {
   right: 24px;
+}
+
+/* Show only when hovering near the sides */
+.hover-zone.left:hover ~ .arrow-left,
+.arrow-left:hover {
+  opacity: 0.55;
+  pointer-events: auto;
+}
+
+.hover-zone.right:hover ~ .arrow-right,
+.arrow-right:hover {
+  opacity: 0.55;
+  pointer-events: auto;
+}
+
+.arrow:hover {
+  opacity: 0.9;
+  background: rgba(255,255,255,0.42);
+}
+
+/* Hide arrows on touch-only screens */
+@media (hover: none) {
+  .arrow,
+  .hover-zone {
+    display: none;
+  }
 }
 </style>
 </head>
@@ -76,8 +115,11 @@ html, body {
   <img id="imgB" class="slide" alt="">
 </div>
 
-<button class="arrow arrow-left" onclick="manualAdvance(-1)">‹</button>
-<button class="arrow arrow-right" onclick="manualAdvance(1)">›</button>
+<div class="hover-zone left"></div>
+<div class="hover-zone right"></div>
+
+<button class="arrow arrow-left" aria-label="Previous slide" onclick="manualAdvance(-1)">‹</button>
+<button class="arrow arrow-right" aria-label="Next slide" onclick="manualAdvance(1)">›</button>
 
 <script>
 const SLIDE_FOLDER = "slides";
@@ -93,7 +135,7 @@ const imgB = document.getElementById("imgB");
 
 let current = null;
 let front = imgA;
-let back  = imgB;
+let back = imgB;
 let isTransitioning = false;
 let timer = null;
 
@@ -109,7 +151,7 @@ function loadImage(img, url) {
   });
 }
 
-async function findNextSlide(direction = 1) {
+async function findSlide(direction = 1) {
   for (let step = 1; step <= MAX_SLIDES; step++) {
     let candidate;
 
@@ -132,7 +174,7 @@ async function advance(direction = 1) {
 
   isTransitioning = true;
 
-  const next = await findNextSlide(direction);
+  const next = await findSlide(direction);
 
   if (next === null) {
     isTransitioning = false;
@@ -159,6 +201,11 @@ function manualAdvance(direction) {
   advance(direction);
   resetTimer();
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") manualAdvance(1);
+  if (e.key === "ArrowLeft") manualAdvance(-1);
+});
 
 (async () => {
   for (let i = 1; i <= MAX_SLIDES; i++) {
