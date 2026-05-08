@@ -16,8 +16,6 @@ html, body {
 #stage {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
   background: black;
 }
 
@@ -35,7 +33,6 @@ html, body {
   opacity: 1;
 }
 
-/* Invisible edge zones */
 .hover-zone {
   position: fixed;
   top: 0;
@@ -44,15 +41,9 @@ html, body {
   z-index: 9;
 }
 
-.hover-zone.left {
-  left: 0;
-}
+.hover-zone.left { left: 0; }
+.hover-zone.right { right: 0; }
 
-.hover-zone.right {
-  right: 0;
-}
-
-/* Arrows hidden by default */
 .arrow {
   position: fixed;
   top: 50%;
@@ -65,28 +56,17 @@ html, body {
   background: rgba(255,255,255,0.25);
   color: white;
   font-size: 62px;
-  line-height: 1;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease, background 0.25s ease;
 }
 
-.arrow-left {
-  left: 24px;
-}
+.arrow-left { left: 24px; }
+.arrow-right { right: 24px; }
 
-.arrow-right {
-  right: 24px;
-}
-
-/* Show only when hovering near the sides */
 .hover-zone.left:hover ~ .arrow-left,
-.arrow-left:hover {
-  opacity: 0.55;
-  pointer-events: auto;
-}
-
+.arrow-left:hover,
 .hover-zone.right:hover ~ .arrow-right,
 .arrow-right:hover {
   opacity: 0.55;
@@ -98,7 +78,6 @@ html, body {
   background: rgba(255,255,255,0.42);
 }
 
-/* Hide arrows on touch-only screens */
 @media (hover: none) {
   .arrow,
   .hover-zone {
@@ -124,7 +103,10 @@ html, body {
 <script>
 const SLIDE_FOLDER = "slides";
 const EXT = "jpg";
-const MAX_SLIDES = 60;
+
+const FIRST_SLIDE = 0;
+const LAST_SLIDE = 60;
+
 const SECONDS_PER_SLIDE = 15;
 const FADE_SECONDS = 1.2;
 
@@ -151,15 +133,26 @@ function loadImage(img, url) {
   });
 }
 
-async function findSlide(direction = 1) {
-  for (let step = 1; step <= MAX_SLIDES; step++) {
-    let candidate;
+function nextCandidate(start, step, direction) {
+  const total = LAST_SLIDE - FIRST_SLIDE + 1;
+  const index = start - FIRST_SLIDE;
 
-    if (direction === 1) {
-      candidate = ((current - 1 + step) % MAX_SLIDES) + 1;
-    } else {
-      candidate = ((current - 1 - step + MAX_SLIDES * 10) % MAX_SLIDES) + 1;
-    }
+  let nextIndex;
+
+  if (direction === 1) {
+    nextIndex = (index + step) % total;
+  } else {
+    nextIndex = (index - step + total * 10) % total;
+  }
+
+  return FIRST_SLIDE + nextIndex;
+}
+
+async function findSlide(direction = 1) {
+  const total = LAST_SLIDE - FIRST_SLIDE + 1;
+
+  for (let step = 1; step <= total; step++) {
+    const candidate = nextCandidate(current, step, direction);
 
     if (await loadImage(back, slideUrl(candidate))) {
       return candidate;
@@ -208,7 +201,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 (async () => {
-  for (let i = 1; i <= MAX_SLIDES; i++) {
+  for (let i = FIRST_SLIDE; i <= LAST_SLIDE; i++) {
     if (await loadImage(imgA, slideUrl(i))) {
       current = i;
       break;
