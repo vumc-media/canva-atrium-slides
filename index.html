@@ -13,12 +13,9 @@ html, body {
   overflow: hidden;
 }
 
-/* ===== SLIDESHOW AREA ===== */
 #stage {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
   background: black;
 }
 
@@ -27,13 +24,65 @@ html, body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;   /* change to 'cover' if you want edge-to-edge fill */
+  object-fit: contain;
   opacity: 0;
   transition: opacity 1.2s ease-in-out;
 }
 
-.active {
+.slide.active {
   opacity: 1;
+}
+
+.hover-zone {
+  position: fixed;
+  top: 0;
+  width: 18%;
+  height: 100%;
+  z-index: 9;
+}
+
+.hover-zone.left { left: 0; }
+.hover-zone.right { right: 0; }
+
+.arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 78px;
+  height: 120px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.25);
+  color: white;
+  font-size: 62px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, background 0.25s ease;
+}
+
+.arrow-left { left: 24px; }
+.arrow-right { right: 24px; }
+
+.hover-zone.left:hover ~ .arrow-left,
+.arrow-left:hover,
+.hover-zone.right:hover ~ .arrow-right,
+.arrow-right:hover {
+  opacity: 0.55;
+  pointer-events: auto;
+}
+
+.arrow:hover {
+  opacity: 0.9;
+  background: rgba(255,255,255,0.42);
+}
+
+@media (hover: none) {
+  .arrow,
+  .hover-zone {
+    display: none;
+  }
 }
 </style>
 </head>
@@ -45,19 +94,32 @@ html, body {
   <img id="imgB" class="slide" alt="">
 </div>
 
+<div class="hover-zone left"></div>
+<div class="hover-zone right"></div>
+
+<button class="arrow arrow-left" aria-label="Previous slide" onclick="manualAdvance(-1)">‹</button>
+<button class="arrow arrow-right" aria-label="Next slide" onclick="manualAdvance(1)">›</button>
+
 <script>
-/* ===== SETTINGS ===== */
 const SLIDE_FOLDER = "slides";
 const EXT = "jpg";
-const MAX_SLIDES = 60;
-const SECONDS_PER_SLIDE = 10;
+
+const FIRST_SLIDE = 0;
+const LAST_SLIDE = 60;
+
+const SECONDS_PER_SLIDE = 15;
 const FADE_SECONDS = 1.2;
 
-// Cache-busting so overwriting files updates automatically
 const CACHE_TAG = new Date().toISOString().slice(0,10);
 
 const imgA = document.getElementById("imgA");
 const imgB = document.getElementById("imgB");
+
+let current = null;
+let front = imgA;
+let back = imgB;
+let isTransitioning = false;
+let timer = null;
 
 function slideUrl(n) {
   return `${SLIDE_FOLDER}/slide${n}.${EXT}?v=${CACHE_TAG}`;
@@ -71,10 +133,75 @@ function loadImage(img, url) {
   });
 }
 
-(async () => {
-  let current = null;
+function nextCandidate(start, step, direction) {
+  const total = LAST_SLIDE - FIRST_SLIDE + 1;
+  const index = start - FIRST_SLIDE;
 
-  for (let i = 1; i <= MAX_SLIDES; i++) {
+  let nextIndex;
+
+  if (direction === 1) {
+    nextIndex = (index + step) % total;
+  } else {
+    nextIndex = (index - step + total * 10) % total;
+  }
+
+  return FIRST_SLIDE + nextIndex;
+}
+
+async function findSlide(direction = 1) {
+  const total = LAST_SLIDE - FIRST_SLIDE + 1;
+
+  for (let step = 1; step <= total; step++) {
+    const candidate = nextCandidate(current, step, direction);
+
+    if (await loadImage(back, slideUrl(candidate))) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+async function advance(direction = 1) {
+  if (isTransitioning || current === null) return;
+
+  isTransitioning = true;
+
+  const next = await findSlide(direction);
+
+  if (next === null) {
+    isTransitioning = false;
+    return;
+  }
+
+  back.getBoundingClientRect();
+  back.classList.add("active");
+  front.classList.remove("active");
+
+  setTimeout(() => {
+    [front, back] = [back, front];
+    current = next;
+    isTransitioning = false;
+  }, FADE_SECONDS * 1000 + 50);
+}
+
+function resetTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => advance(1), SECONDS_PER_SLIDE * 1000);
+}
+
+function manualAdvance(direction) {
+  advance(direction);
+  resetTimer();
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") manualAdvance(1);
+  if (e.key === "ArrowLeft") manualAdvance(-1);
+});
+
+(async () => {
+  for (let i = FIRST_SLIDE; i <= LAST_SLIDE; i++) {
     if (await loadImage(imgA, slideUrl(i))) {
       current = i;
       break;
@@ -86,34 +213,7 @@ function loadImage(img, url) {
     return;
   }
 
-  let front = imgA;
-  let back  = imgB;
-
-  async function advance() {
-    let next = null;
-
-    for (let step = 1; step <= MAX_SLIDES; step++) {
-      const candidate = ((current - 1 + step) % MAX_SLIDES) + 1;
-
-      if (await loadImage(back, slideUrl(candidate))) {
-        next = candidate;
-        break;
-      }
-    }
-
-    if (next === null) return;
-
-    back.getBoundingClientRect();
-    back.classList.add("active");
-    front.classList.remove("active");
-
-    setTimeout(() => {
-      [front, back] = [back, front];
-      current = next;
-    }, FADE_SECONDS * 1000 + 50);
-  }
-
-  setInterval(advance, SECONDS_PER_SLIDE * 1000);
+  resetTimer();
 })();
 </script>
 
