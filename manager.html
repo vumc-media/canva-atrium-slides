@@ -7,190 +7,317 @@
 <title>VUMC Atrium Slide Manager</title>
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
+* {
+  box-sizing: border-box;
+}
 
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #111;
-    color: #fff;
-  }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #111;
+  color: #fff;
+}
 
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #181818;
-    border-bottom: 1px solid #333;
-    padding: 18px 24px;
-  }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #181818;
+  border-bottom: 1px solid #333;
+  padding: 18px 24px;
+}
 
-  header h1 {
-    margin: 0 0 6px;
-    font-size: 24px;
-  }
+header h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+}
 
-  header p {
-    margin: 0;
-    color: #aaa;
-    font-size: 14px;
-  }
+header p {
+  margin: 0;
+  color: #aaa;
+  font-size: 14px;
+}
 
-  .toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 16px;
-  }
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  align-items: center;
+}
 
-  button {
-    border: 0;
-    border-radius: 8px;
-    padding: 11px 16px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-  }
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-  button:hover {
-    opacity: .9;
-  }
+button:hover {
+  opacity: .9;
+}
 
-  .primary {
-    background: #fff;
-    color: #111;
-  }
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
 
-  .danger {
-    background: #d93025;
-    color: white;
-  }
+.primary {
+  background: #fff;
+  color: #111;
+}
 
-  .danger:disabled {
-    background: #555;
-    cursor: not-allowed;
-  }
+.danger {
+  background: #d93025;
+  color: white;
+}
 
-  .token-area {
-    padding: 18px 24px;
-    background: #202020;
-    border-bottom: 1px solid #333;
-  }
+.upload-button {
+  background: #2e7d32;
+  color: white;
+}
 
-  .token-row {
-    display: flex;
-    gap: 10px;
-    max-width: 900px;
-  }
+.selected-count {
+  margin-left: auto;
+  padding: 11px 14px;
+  background: #292929;
+  border-radius: 8px;
+  font-weight: 600;
+}
 
-  input[type="password"] {
-    flex: 1;
-    padding: 11px 12px;
-    border-radius: 8px;
-    border: 1px solid #555;
-    background: #111;
-    color: white;
-    font-size: 14px;
-  }
+/* CONNECTION */
 
-  #status {
-    padding: 14px 24px;
-    color: #bbb;
-  }
+.connection-area {
+  padding: 14px 24px;
+  background: #202020;
+  border-bottom: 1px solid #333;
+}
 
-  #grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 18px;
-    padding: 0 24px 40px;
-  }
+.connected-row,
+.token-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 900px;
+}
 
-  .card {
-    position: relative;
-    background: #1c1c1c;
-    border: 2px solid transparent;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: .15s ease;
-  }
+.connected-status {
+  color: #7ee787;
+  font-weight: 700;
+}
 
-  .card:hover {
-    transform: translateY(-2px);
-    border-color: #666;
-  }
+input[type="password"] {
+  flex: 1;
+  padding: 11px 12px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #111;
+  color: white;
+  font-size: 14px;
+}
 
-  .card.selected {
-    border-color: #ff5252;
-  }
+/* UPLOAD */
 
-  .card img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
-    background: black;
-  }
+.upload-section {
+  padding: 22px 24px;
+  border-bottom: 1px solid #333;
+}
 
-  .info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-  }
+.upload-section h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
 
-  .info input {
-    width: 20px;
-    height: 20px;
-  }
+.drop-zone {
+  border: 2px dashed #666;
+  border-radius: 14px;
+  padding: 30px 20px;
+  text-align: center;
+  background: #181818;
+  transition: .2s ease;
+  cursor: pointer;
+}
 
-  .filename {
-    font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.drop-zone.dragover {
+  border-color: #7ee787;
+  background: #202820;
+}
+
+.drop-zone strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.drop-zone span {
+  color: #aaa;
+  font-size: 14px;
+}
+
+#filePicker {
+  display: none;
+}
+
+.upload-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.upload-preview:empty {
+  display: none;
+}
+
+.preview-card {
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #444;
+}
+
+.preview-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #000;
+}
+
+.preview-name {
+  padding: 8px;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-actions {
+  display: none;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.upload-actions.visible {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.upload-progress {
+  margin-top: 12px;
+  color: #aaa;
+}
+
+/* CURRENT SLIDES */
+
+#status {
+  padding: 18px 24px 14px;
+  color: #bbb;
+}
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  padding: 0 24px 40px;
+}
+
+.card {
+  position: relative;
+  background: #1c1c1c;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #666;
+}
+
+.card.selected {
+  border-color: #ff5252;
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: black;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.info input {
+  width: 20px;
+  height: 20px;
+}
+
+.filename {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+
+  .token-row,
+  .connected-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .selected-count {
-    margin-left: auto;
-    padding: 11px 14px;
-    background: #292929;
-    border-radius: 8px;
-    font-weight: 600;
+    margin-left: 0;
   }
 
-  @media (max-width: 600px) {
-    .token-row {
-      flex-direction: column;
-    }
-
-    #grid {
-      grid-template-columns: 1fr;
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-
-    header,
-    .token-area,
-    #status {
-      padding-left: 14px;
-      padding-right: 14px;
-    }
+  #grid {
+    grid-template-columns: 1fr;
+    padding-left: 12px;
+    padding-right: 12px;
   }
+
+  header,
+  .connection-area,
+  .upload-section,
+  #status {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
 </style>
 </head>
 
 <body>
 
 <header>
+
   <h1>VUMC Atrium Slide Manager</h1>
-  <p>Manage the images currently displayed on the Atrium slideshow.</p>
+
+  <p>
+    Manage the images currently displayed on the Atrium slideshow.
+  </p>
 
   <div class="toolbar">
-    <button class="primary" onclick="selectAll()">Select All</button>
-    <button class="primary" onclick="clearSelection()">Clear Selection</button>
+
+    <button class="primary" onclick="selectAll()">
+      Select All
+    </button>
+
+    <button class="primary" onclick="clearSelection()">
+      Clear Selection
+    </button>
 
     <button
       id="deleteButton"
@@ -200,31 +327,107 @@
       Delete Selected
     </button>
 
+    <button class="primary" onclick="loadSlides()">
+      Refresh
+    </button>
+
     <div class="selected-count">
       <span id="count">0</span> selected
     </div>
+
   </div>
+
 </header>
 
 
-<div class="token-area">
+<!-- GITHUB CONNECTION -->
 
-  <div class="token-row">
+<div class="connection-area">
+
+  <div id="connectedRow" class="connected-row" style="display:none;">
+
+    <span class="connected-status">
+      ✓ GitHub Connected
+    </span>
+
+    <button class="primary" onclick="showTokenBox()">
+      Change Token
+    </button>
+
+  </div>
+
+
+  <div id="tokenRow" class="token-row">
+
     <input
       id="token"
       type="password"
       placeholder="GitHub Personal Access Token">
 
     <button class="primary" onclick="saveToken()">
-      Use Token
+      Save Token
     </button>
 
-    <button class="primary" onclick="loadSlides()">
-      Refresh Slides
-    </button>
   </div>
 
 </div>
+
+
+<!-- UPLOAD -->
+
+<section class="upload-section">
+
+  <h2>Add / Replace Slides</h2>
+
+  <div
+    id="dropZone"
+    class="drop-zone"
+    onclick="document.getElementById('filePicker').click()">
+
+    <strong>Drop Canva JPGs here</strong>
+
+    <span>
+      or click here to choose images
+    </span>
+
+  </div>
+
+  <input
+    id="filePicker"
+    type="file"
+    accept=".jpg,.jpeg,.png"
+    multiple>
+
+  <div
+    id="uploadPreview"
+    class="upload-preview">
+  </div>
+
+  <div
+    id="uploadActions"
+    class="upload-actions">
+
+    <button
+      id="uploadButton"
+      class="upload-button"
+      onclick="uploadFiles()">
+      Upload to Atrium
+    </button>
+
+    <button
+      class="primary"
+      onclick="clearUploadQueue()">
+      Cancel
+    </button>
+
+  </div>
+
+  <div
+    id="uploadProgress"
+    class="upload-progress">
+  </div>
+
+</section>
 
 
 <div id="status">
@@ -246,11 +449,21 @@ const API =
 
 let files = [];
 let selected = new Set();
+let uploadQueue = [];
 
 
-/* ---------------------------------------------------
+/* =====================================================
    TOKEN
---------------------------------------------------- */
+===================================================== */
+
+function getToken() {
+
+  return localStorage.getItem(
+    "atriumGithubToken"
+  );
+
+}
+
 
 function saveToken() {
 
@@ -263,29 +476,72 @@ function saveToken() {
   }
 
   localStorage.setItem(
-  "atriumGithubToken",
-  token
-);
+    "atriumGithubToken",
+    token
+  );
 
   document.getElementById("token").value = "";
 
-  setStatus("GitHub token loaded for this browser session.");
+  updateConnectionUI();
 
 }
 
 
-function getToken() {
+function showTokenBox() {
 
-  return localStorage.getItem(
-  "atriumGithubToken"
-);
+  document.getElementById("connectedRow").style.display =
+    "none";
+
+  document.getElementById("tokenRow").style.display =
+    "flex";
 
 }
 
 
-/* ---------------------------------------------------
+function updateConnectionUI() {
+
+  const token = getToken();
+
+  if (token) {
+
+    document.getElementById("connectedRow").style.display =
+      "flex";
+
+    document.getElementById("tokenRow").style.display =
+      "none";
+
+  }
+  else {
+
+    document.getElementById("connectedRow").style.display =
+      "none";
+
+    document.getElementById("tokenRow").style.display =
+      "flex";
+
+  }
+
+}
+
+
+function authorizationFailed() {
+
+  localStorage.removeItem(
+    "atriumGithubToken"
+  );
+
+  updateConnectionUI();
+
+  alert(
+    "GitHub authorization has expired or is no longer valid. Enter a new token to reconnect."
+  );
+
+}
+
+
+/* =====================================================
    STATUS
---------------------------------------------------- */
+===================================================== */
 
 function setStatus(message) {
 
@@ -295,9 +551,9 @@ function setStatus(message) {
 }
 
 
-/* ---------------------------------------------------
+/* =====================================================
    LOAD SLIDES
---------------------------------------------------- */
+===================================================== */
 
 async function loadSlides() {
 
@@ -353,10 +609,6 @@ async function loadSlides() {
 }
 
 
-/* ---------------------------------------------------
-   NATURAL SORT
---------------------------------------------------- */
-
 function naturalSort(a, b) {
 
   return a.name.localeCompare(
@@ -371,9 +623,9 @@ function naturalSort(a, b) {
 }
 
 
-/* ---------------------------------------------------
-   RENDER
---------------------------------------------------- */
+/* =====================================================
+   RENDER CURRENT SLIDES
+===================================================== */
 
 function renderSlides() {
 
@@ -388,7 +640,6 @@ function renderSlides() {
       document.createElement("div");
 
     card.className = "card";
-
     card.dataset.path = file.path;
 
     card.onclick = function(event) {
@@ -404,11 +655,6 @@ function renderSlides() {
 
     const image =
       document.createElement("img");
-
-    /*
-      Add timestamp to prevent stale browser
-      thumbnails after a replacement.
-    */
 
     image.src =
       `${file.download_url}?v=${Date.now()}`;
@@ -436,7 +682,6 @@ function renderSlides() {
       document.createElement("div");
 
     filename.className = "filename";
-
     filename.textContent = file.name;
 
 
@@ -453,9 +698,9 @@ function renderSlides() {
 }
 
 
-/* ---------------------------------------------------
+/* =====================================================
    SELECTION
---------------------------------------------------- */
+===================================================== */
 
 function toggleFile(path) {
 
@@ -485,7 +730,6 @@ function selectAll() {
 function clearSelection() {
 
   selected.clear();
-
   updateSelection();
 
 }
@@ -498,7 +742,6 @@ function updateSelection() {
 
   document.getElementById("deleteButton").disabled =
     selected.size === 0;
-
 
   document.querySelectorAll(".card")
     .forEach(card => {
@@ -525,9 +768,9 @@ function updateSelection() {
 }
 
 
-/* ---------------------------------------------------
+/* =====================================================
    DELETE
---------------------------------------------------- */
+===================================================== */
 
 async function deleteSelected() {
 
@@ -535,17 +778,14 @@ async function deleteSelected() {
 
   if (!token) {
 
+    showTokenBox();
+
     alert(
-      "Enter your GitHub Personal Access Token and click Use Token first."
+      "Enter your GitHub token first."
     );
 
     return;
 
-  }
-
-
-  if (selected.size === 0) {
-    return;
   }
 
 
@@ -555,14 +795,13 @@ async function deleteSelected() {
     );
 
 
-  const names =
-    selectedFiles
-      .map(file => file.name)
-      .join("\n");
+  if (!selectedFiles.length) {
+    return;
+  }
 
 
   const confirmed = confirm(
-    `Delete ${selectedFiles.length} slide(s)?\n\n${names}\n\nThis will remove them from the live Atrium slideshow.`
+    `Delete ${selectedFiles.length} selected slide(s)?\n\nThey will be removed from the Atrium slideshow.`
   );
 
 
@@ -571,9 +810,8 @@ async function deleteSelected() {
   }
 
 
-  document.getElementById(
-    "deleteButton"
-  ).disabled = true;
+  document.getElementById("deleteButton").disabled =
+    true;
 
 
   let deleted = 0;
@@ -625,14 +863,22 @@ async function deleteSelected() {
       );
 
 
-      if (!response.ok) {
+      if (
+        response.status === 401 ||
+        response.status === 403
+      ) {
 
-        const error =
-          await response.text();
+        authorizationFailed();
+        return;
+
+      }
+
+
+      if (!response.ok) {
 
         console.error(
           file.name,
-          error
+          await response.text()
         );
 
         failed++;
@@ -648,7 +894,6 @@ async function deleteSelected() {
     catch (error) {
 
       console.error(error);
-
       failed++;
 
     }
@@ -656,21 +901,10 @@ async function deleteSelected() {
   }
 
 
-  if (failed > 0) {
-
-    setStatus(
-      `${deleted} deleted. ${failed} failed.`
-    );
+  if (failed) {
 
     alert(
-      `${deleted} slide(s) deleted.\n${failed} failed.`
-    );
-
-  }
-  else {
-
-    setStatus(
-      `${deleted} slide(s) deleted successfully. Netlify will update automatically.`
+      `${deleted} deleted.\n${failed} failed.`
     );
 
   }
@@ -681,13 +915,475 @@ async function deleteSelected() {
 }
 
 
-/* ---------------------------------------------------
+/* =====================================================
+   DRAG / DROP
+===================================================== */
+
+const dropZone =
+  document.getElementById("dropZone");
+
+const filePicker =
+  document.getElementById("filePicker");
+
+
+["dragenter", "dragover"].forEach(eventName => {
+
+  dropZone.addEventListener(
+    eventName,
+    event => {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      dropZone.classList.add(
+        "dragover"
+      );
+
+    }
+  );
+
+});
+
+
+["dragleave", "drop"].forEach(eventName => {
+
+  dropZone.addEventListener(
+    eventName,
+    event => {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      dropZone.classList.remove(
+        "dragover"
+      );
+
+    }
+  );
+
+});
+
+
+dropZone.addEventListener(
+  "drop",
+  event => {
+
+    addUploadFiles(
+      event.dataTransfer.files
+    );
+
+  }
+);
+
+
+filePicker.addEventListener(
+  "change",
+  event => {
+
+    addUploadFiles(
+      event.target.files
+    );
+
+    filePicker.value = "";
+
+  }
+);
+
+
+/* =====================================================
+   UPLOAD QUEUE
+===================================================== */
+
+function addUploadFiles(fileList) {
+
+  const incoming =
+    Array.from(fileList)
+      .filter(file =>
+        /\.(jpg|jpeg|png)$/i.test(file.name)
+      );
+
+
+  if (!incoming.length) {
+
+    alert(
+      "No JPG or PNG images were found."
+    );
+
+    return;
+
+  }
+
+
+  incoming.forEach(file => {
+
+    const existingIndex =
+      uploadQueue.findIndex(
+        queued =>
+          queued.name.toLowerCase() ===
+          file.name.toLowerCase()
+      );
+
+
+    if (existingIndex >= 0) {
+
+      uploadQueue[existingIndex] =
+        file;
+
+    }
+    else {
+
+      uploadQueue.push(file);
+
+    }
+
+  });
+
+
+  uploadQueue.sort((a, b) =>
+    a.name.localeCompare(
+      b.name,
+      undefined,
+      {
+        numeric: true,
+        sensitivity: "base"
+      }
+    )
+  );
+
+
+  renderUploadPreview();
+
+}
+
+
+function renderUploadPreview() {
+
+  const preview =
+    document.getElementById(
+      "uploadPreview"
+    );
+
+  preview.innerHTML = "";
+
+
+  uploadQueue.forEach(file => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "preview-card";
+
+
+    const img =
+      document.createElement("img");
+
+    const objectURL =
+      URL.createObjectURL(file);
+
+    img.src = objectURL;
+
+    img.onload = () =>
+      URL.revokeObjectURL(objectURL);
+
+
+    const name =
+      document.createElement("div");
+
+    name.className =
+      "preview-name";
+
+    name.textContent =
+      file.name;
+
+
+    card.appendChild(img);
+    card.appendChild(name);
+
+    preview.appendChild(card);
+
+  });
+
+
+  document.getElementById(
+    "uploadActions"
+  ).classList.toggle(
+    "visible",
+    uploadQueue.length > 0
+  );
+
+
+  document.getElementById(
+    "uploadProgress"
+  ).textContent =
+    uploadQueue.length
+      ? `${uploadQueue.length} image(s) ready to upload.`
+      : "";
+
+}
+
+
+function clearUploadQueue() {
+
+  uploadQueue = [];
+
+  renderUploadPreview();
+
+}
+
+
+/* =====================================================
+   FILE → BASE64
+===================================================== */
+
+function fileToBase64(file) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+
+        const result =
+          reader.result;
+
+        const base64 =
+          result.split(",")[1];
+
+        resolve(base64);
+
+      };
+
+      reader.onerror =
+        reject;
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   FIND EXISTING FILE
+===================================================== */
+
+function findExistingFile(name) {
+
+  return files.find(file =>
+    file.name.toLowerCase() ===
+    name.toLowerCase()
+  );
+
+}
+
+
+/* =====================================================
+   UPLOAD FILES
+===================================================== */
+
+async function uploadFiles() {
+
+  const token = getToken();
+
+  if (!token) {
+
+    showTokenBox();
+
+    alert(
+      "Enter your GitHub token first."
+    );
+
+    return;
+
+  }
+
+
+  if (!uploadQueue.length) {
+    return;
+  }
+
+
+  const confirmed = confirm(
+    `Upload ${uploadQueue.length} image(s) to the Atrium slideshow?\n\nExisting files with the same names will be replaced.`
+  );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const uploadButton =
+    document.getElementById(
+      "uploadButton"
+    );
+
+  uploadButton.disabled = true;
+
+
+  let completed = 0;
+  let failed = 0;
+
+
+  for (const file of uploadQueue) {
+
+    document.getElementById(
+      "uploadProgress"
+    ).textContent =
+      `Uploading ${file.name} (${completed + 1} of ${uploadQueue.length})...`;
+
+
+    try {
+
+      const content =
+        await fileToBase64(file);
+
+      const existing =
+        findExistingFile(file.name);
+
+
+      const payload = {
+
+        message:
+          existing
+            ? `Update Atrium slide ${file.name}`
+            : `Add Atrium slide ${file.name}`,
+
+        content: content,
+
+        branch: BRANCH
+
+      };
+
+
+      if (existing) {
+        payload.sha = existing.sha;
+      }
+
+
+      const response =
+        await fetch(
+          `${API}/contents/${FOLDER}/${encodeURIComponent(file.name)}`,
+          {
+
+            method: "PUT",
+
+            headers: {
+
+              "Authorization":
+                `Bearer ${token}`,
+
+              "Accept":
+                "application/vnd.github+json",
+
+              "Content-Type":
+                "application/json",
+
+              "X-GitHub-Api-Version":
+                "2022-11-28"
+
+            },
+
+            body:
+              JSON.stringify(payload)
+
+          }
+        );
+
+
+      if (
+        response.status === 401 ||
+        response.status === 403
+      ) {
+
+        authorizationFailed();
+
+        uploadButton.disabled =
+          false;
+
+        return;
+
+      }
+
+
+      if (!response.ok) {
+
+        console.error(
+          file.name,
+          await response.text()
+        );
+
+        failed++;
+
+      }
+      else {
+
+        completed++;
+
+      }
+
+    }
+    catch (error) {
+
+      console.error(error);
+
+      failed++;
+
+    }
+
+  }
+
+
+  uploadButton.disabled = false;
+
+
+  if (failed) {
+
+    document.getElementById(
+      "uploadProgress"
+    ).textContent =
+      `${completed} uploaded. ${failed} failed.`;
+
+    alert(
+      `${completed} image(s) uploaded.\n${failed} failed.`
+    );
+
+  }
+  else {
+
+    document.getElementById(
+      "uploadProgress"
+    ).textContent =
+      `${completed} image(s) uploaded successfully. Netlify will update automatically.`;
+
+  }
+
+
+  uploadQueue = [];
+
+  renderUploadPreview();
+
+  await loadSlides();
+
+}
+
+
+/* =====================================================
    START
---------------------------------------------------- */
+===================================================== */
 
 window.addEventListener(
   "DOMContentLoaded",
-  loadSlides
+  () => {
+
+    updateConnectionUI();
+    loadSlides();
+
+  }
 );
 
 </script>
