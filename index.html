@@ -1,23 +1,33 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
+
 <title>Atrium Slides</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1">
 
 <style>
-html, body {
+
+html,
+body {
   margin: 0;
   height: 100%;
   background: black;
   overflow: hidden;
 }
 
+
 #stage {
   position: fixed;
   inset: 0;
   background: black;
 }
+
 
 .slide {
   position: absolute;
@@ -29,9 +39,11 @@ html, body {
   transition: opacity 1.2s ease-in-out;
 }
 
+
 .slide.active {
   opacity: 1;
 }
+
 
 .hover-zone {
   position: fixed;
@@ -41,181 +53,720 @@ html, body {
   z-index: 9;
 }
 
-.hover-zone.left { left: 0; }
-.hover-zone.right { right: 0; }
+
+.hover-zone.left {
+  left: 0;
+}
+
+
+.hover-zone.right {
+  right: 0;
+}
+
 
 .arrow {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
+
   width: 78px;
   height: 120px;
+
   border: none;
   border-radius: 18px;
-  background: rgba(255,255,255,0.25);
+
+  background:
+    rgba(255,255,255,0.25);
+
   color: white;
+
   font-size: 62px;
+
   cursor: pointer;
+
   opacity: 0;
+
   pointer-events: none;
-  transition: opacity 0.25s ease, background 0.25s ease;
+
+  transition:
+    opacity 0.25s ease,
+    background 0.25s ease;
 }
 
-.arrow-left { left: 24px; }
-.arrow-right { right: 24px; }
+
+.arrow-left {
+  left: 24px;
+}
+
+
+.arrow-right {
+  right: 24px;
+}
+
 
 .hover-zone.left:hover ~ .arrow-left,
 .arrow-left:hover,
 .hover-zone.right:hover ~ .arrow-right,
 .arrow-right:hover {
+
   opacity: 0.55;
+
   pointer-events: auto;
+
 }
+
 
 .arrow:hover {
+
   opacity: 0.9;
-  background: rgba(255,255,255,0.42);
+
+  background:
+    rgba(255,255,255,0.42);
+
 }
 
+
 @media (hover: none) {
+
   .arrow,
   .hover-zone {
     display: none;
   }
+
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div id="stage">
-  <img id="imgA" class="slide active" alt="">
-  <img id="imgB" class="slide" alt="">
+
+  <img
+    id="imgA"
+    class="slide active"
+    alt="">
+
+  <img
+    id="imgB"
+    class="slide"
+    alt="">
+
 </div>
 
+
 <div class="hover-zone left"></div>
+
 <div class="hover-zone right"></div>
 
-<button class="arrow arrow-left" aria-label="Previous slide" onclick="manualAdvance(-1)">‹</button>
-<button class="arrow arrow-right" aria-label="Next slide" onclick="manualAdvance(1)">›</button>
+
+<button
+  class="arrow arrow-left"
+  aria-label="Previous slide"
+  onclick="manualAdvance(-1)">
+  ‹
+</button>
+
+
+<button
+  class="arrow arrow-right"
+  aria-label="Next slide"
+  onclick="manualAdvance(1)">
+  ›
+</button>
+
+
 
 <script>
-const SLIDE_FOLDER = "slides";
-const EXT = "jpg";
 
-const FIRST_SLIDE = 0;
-const LAST_SLIDE = 60;
+/* =====================================================
+   SETTINGS
+===================================================== */
 
-const SECONDS_PER_SLIDE = 15;
-const FADE_SECONDS = 1.2;
+const SLIDE_FOLDER =
+  "slides";
 
-const CACHE_TAG = new Date().toISOString().slice(0,10);
+const EXT =
+  "jpg";
 
-const imgA = document.getElementById("imgA");
-const imgB = document.getElementById("imgB");
+const CONFIG_FILE =
+  "slides-config.json";
 
-let current = null;
-let front = imgA;
-let back = imgB;
-let isTransitioning = false;
-let timer = null;
+const FIRST_SLIDE =
+  0;
+
+const LAST_SLIDE =
+  60;
+
+const SECONDS_PER_SLIDE =
+  15;
+
+const FADE_SECONDS =
+  1.2;
+
+
+/*
+  Unique cache value each time the
+  slideshow page is opened.
+
+  This is better than the previous
+  once-per-day cache value because
+  replaced slides can update immediately
+  when PP7/browser reloads the page.
+*/
+
+const CACHE_TAG =
+  Date.now();
+
+
+const imgA =
+  document.getElementById(
+    "imgA"
+  );
+
+const imgB =
+  document.getElementById(
+    "imgB"
+  );
+
+
+let current =
+  null;
+
+let front =
+  imgA;
+
+let back =
+  imgB;
+
+let isTransitioning =
+  false;
+
+let timer =
+  null;
+
+let hiddenSlides =
+  new Set();
+
+
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+async function loadConfig() {
+
+  try {
+
+    const response =
+      await fetch(
+
+        `${CONFIG_FILE}?v=${Date.now()}`,
+
+        {
+          cache:
+            "no-store"
+        }
+
+      );
+
+
+    /*
+      No config yet means everything
+      is active.
+    */
+
+    if (
+      !response.ok
+    ) {
+
+      hiddenSlides =
+        new Set();
+
+      return;
+
+    }
+
+
+    const config =
+      await response.json();
+
+
+    hiddenSlides =
+      new Set(
+
+        Array.isArray(
+          config.hidden
+        )
+
+          ? config.hidden
+
+          : []
+
+      );
+
+  }
+
+  catch (error) {
+
+    console.warn(
+      "Unable to load hidden slide configuration.",
+      error
+    );
+
+
+    hiddenSlides =
+      new Set();
+
+  }
+
+}
+
+
+
+/* =====================================================
+   SLIDE HELPERS
+===================================================== */
+
+function slideFileName(n) {
+
+  return `slide${n}.${EXT}`;
+
+}
+
 
 function slideUrl(n) {
-  return `${SLIDE_FOLDER}/slide${n}.${EXT}?v=${CACHE_TAG}`;
+
+  return `${SLIDE_FOLDER}/${slideFileName(n)}?v=${CACHE_TAG}`;
+
 }
 
-function loadImage(img, url) {
-  return new Promise(resolve => {
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = url;
-  });
+
+function isHidden(n) {
+
+  return hiddenSlides.has(
+    slideFileName(n)
+  );
+
 }
 
-function nextCandidate(start, step, direction) {
-  const total = LAST_SLIDE - FIRST_SLIDE + 1;
-  const index = start - FIRST_SLIDE;
+
+function loadImage(
+  img,
+  url
+) {
+
+  return new Promise(
+    resolve => {
+
+      img.onload =
+        () =>
+          resolve(true);
+
+
+      img.onerror =
+        () =>
+          resolve(false);
+
+
+      img.src =
+        url;
+
+    }
+  );
+
+}
+
+
+
+/* =====================================================
+   FIND NEXT CANDIDATE
+===================================================== */
+
+function nextCandidate(
+  start,
+  step,
+  direction
+) {
+
+  const total =
+    LAST_SLIDE -
+    FIRST_SLIDE +
+    1;
+
+
+  const index =
+    start -
+    FIRST_SLIDE;
+
 
   let nextIndex;
 
-  if (direction === 1) {
-    nextIndex = (index + step) % total;
-  } else {
-    nextIndex = (index - step + total * 10) % total;
+
+  if (
+    direction === 1
+  ) {
+
+    nextIndex =
+      (index + step) %
+      total;
+
   }
 
-  return FIRST_SLIDE + nextIndex;
+  else {
+
+    nextIndex =
+      (
+        index -
+        step +
+        total * 10
+      ) %
+      total;
+
+  }
+
+
+  return (
+    FIRST_SLIDE +
+    nextIndex
+  );
+
 }
 
-async function findSlide(direction = 1) {
-  const total = LAST_SLIDE - FIRST_SLIDE + 1;
 
-  for (let step = 1; step <= total; step++) {
-    const candidate = nextCandidate(current, step, direction);
 
-    if (await loadImage(back, slideUrl(candidate))) {
-      return candidate;
+/* =====================================================
+   FIND AVAILABLE ACTIVE SLIDE
+===================================================== */
+
+async function findSlide(
+  direction = 1
+) {
+
+  const total =
+    LAST_SLIDE -
+    FIRST_SLIDE +
+    1;
+
+
+  for (
+    let step = 1;
+    step <= total;
+    step++
+  ) {
+
+
+    const candidate =
+      nextCandidate(
+        current,
+        step,
+        direction
+      );
+
+
+    /*
+      Skip hidden slides before even
+      trying to load the image.
+    */
+
+    if (
+      isHidden(
+        candidate
+      )
+    ) {
+
+      continue;
+
     }
+
+
+    if (
+      await loadImage(
+        back,
+        slideUrl(
+          candidate
+        )
+      )
+    ) {
+
+      return candidate;
+
+    }
+
   }
+
 
   return null;
+
 }
 
-async function advance(direction = 1) {
-  if (isTransitioning || current === null) return;
 
-  isTransitioning = true;
 
-  const next = await findSlide(direction);
+/* =====================================================
+   ADVANCE
+===================================================== */
 
-  if (next === null) {
-    isTransitioning = false;
+async function advance(
+  direction = 1
+) {
+
+  if (
+    isTransitioning ||
+    current === null
+  ) {
+
     return;
+
   }
+
+
+  isTransitioning =
+    true;
+
+
+  /*
+    Reload hidden-slide configuration
+    before advancing.
+
+    This means a Hide/Show change can
+    reach an already-open Atrium screen
+    without requiring a complete browser
+    restart.
+  */
+
+  await loadConfig();
+
+
+  const next =
+    await findSlide(
+      direction
+    );
+
+
+  if (
+    next === null
+  ) {
+
+    isTransitioning =
+      false;
+
+    return;
+
+  }
+
 
   back.getBoundingClientRect();
-  back.classList.add("active");
-  front.classList.remove("active");
 
-  setTimeout(() => {
-    [front, back] = [back, front];
-    current = next;
-    isTransitioning = false;
-  }, FADE_SECONDS * 1000 + 50);
+
+  back.classList.add(
+    "active"
+  );
+
+
+  front.classList.remove(
+    "active"
+  );
+
+
+  setTimeout(
+    () => {
+
+
+      [
+        front,
+        back
+      ] =
+        [
+          back,
+          front
+        ];
+
+
+      current =
+        next;
+
+
+      isTransitioning =
+        false;
+
+
+    },
+
+    FADE_SECONDS *
+      1000 +
+      50
+
+  );
+
 }
+
+
+
+/* =====================================================
+   TIMER
+===================================================== */
 
 function resetTimer() {
-  clearInterval(timer);
-  timer = setInterval(() => advance(1), SECONDS_PER_SLIDE * 1000);
+
+  clearInterval(
+    timer
+  );
+
+
+  timer =
+    setInterval(
+
+      () =>
+        advance(1),
+
+      SECONDS_PER_SLIDE *
+        1000
+
+    );
+
 }
 
-function manualAdvance(direction) {
-  advance(direction);
+
+
+/* =====================================================
+   MANUAL NAVIGATION
+===================================================== */
+
+function manualAdvance(
+  direction
+) {
+
+  advance(
+    direction
+  );
+
+
   resetTimer();
+
 }
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") manualAdvance(1);
-  if (e.key === "ArrowLeft") manualAdvance(-1);
-});
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener(
+
+  "keydown",
+
+  event => {
+
+
+    if (
+      event.key ===
+      "ArrowRight"
+    ) {
+
+      manualAdvance(
+        1
+      );
+
+    }
+
+
+    if (
+      event.key ===
+      "ArrowLeft"
+    ) {
+
+      manualAdvance(
+        -1
+      );
+
+    }
+
+  }
+
+);
+
+
+
+/* =====================================================
+   START
+===================================================== */
 
 (async () => {
-  for (let i = FIRST_SLIDE; i <= LAST_SLIDE; i++) {
-    if (await loadImage(imgA, slideUrl(i))) {
-      current = i;
-      break;
+
+
+  /*
+    Load hidden list first.
+  */
+
+  await loadConfig();
+
+
+  /*
+    Find first real, non-hidden slide.
+  */
+
+  for (
+    let i =
+      FIRST_SLIDE;
+
+    i <=
+      LAST_SLIDE;
+
+    i++
+  ) {
+
+
+    if (
+      isHidden(i)
+    ) {
+
+      continue;
+
     }
+
+
+    if (
+      await loadImage(
+        imgA,
+        slideUrl(i)
+      )
+    ) {
+
+      current =
+        i;
+
+      break;
+
+    }
+
   }
 
-  if (current === null) {
-    console.warn("No slides found in /slides/");
+
+  if (
+    current === null
+  ) {
+
+    console.warn(
+      "No active slides found."
+    );
+
     return;
+
   }
+
 
   resetTimer();
+
+
 })();
+
 </script>
 
+
 </body>
+
 </html>
