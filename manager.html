@@ -4,9 +4,7 @@
 <head>
 
 <meta charset="utf-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>VUMC Atrium Slide Manager</title>
 
@@ -94,7 +92,7 @@ button:disabled {
 }
 
 .warning {
-  background: #8a6514;
+  background: #936b10;
   color: #fff;
 }
 
@@ -108,7 +106,7 @@ button:disabled {
 
 
 /* =====================================================
-   CONNECTION
+   GITHUB CONNECTION
 ===================================================== */
 
 .connection-area {
@@ -337,7 +335,7 @@ input[type="password"] {
 
 
 /* =====================================================
-   SLIDE GRID
+   SLIDES
 ===================================================== */
 
 #grid {
@@ -401,7 +399,7 @@ input[type="password"] {
 }
 
 .hidden-overlay span {
-  background: rgba(0,0,0,.78);
+  background: rgba(0,0,0,.8);
   border: 1px solid #d3ae3f;
   color: #ffd866;
   border-radius: 8px;
@@ -552,7 +550,7 @@ input[type="password"] {
 
 
 
-<!-- CONNECTION -->
+<!-- GITHUB CONNECTION -->
 
 <div class="connection-area">
 
@@ -613,7 +611,7 @@ input[type="password"] {
     </strong>
 
     <span>
-      Existing filenames are replaced automatically.
+      Filenames no longer have to be sequential.
     </span>
 
   </div>
@@ -622,7 +620,7 @@ input[type="password"] {
   <input
     id="filePicker"
     type="file"
-    accept=".jpg,.jpeg,.png"
+    accept=".jpg,.jpeg,.png,.webp"
     multiple>
 
 
@@ -714,7 +712,7 @@ input[type="password"] {
 <script>
 
 /* =====================================================
-   CONFIG
+   CONFIGURATION
 ===================================================== */
 
 const OWNER =
@@ -739,7 +737,8 @@ const API =
   `https://api.github.com/repos/${OWNER}/${REPO}`;
 
 
-let files = [];
+let files =
+  [];
 
 let selected =
   new Set();
@@ -750,8 +749,14 @@ let uploadQueue =
 let hiddenSlides =
   new Set();
 
+let manifestSlides =
+  [];
+
 let configSha =
   null;
+
+let configHadSlideList =
+  false;
 
 let currentFilter =
   "all";
@@ -804,6 +809,9 @@ function saveToken() {
 
 
   updateConnectionUI();
+
+
+  loadEverything();
 
 }
 
@@ -922,15 +930,31 @@ function sleep(ms) {
 }
 
 
-function naturalSort(a, b) {
+function naturalNameSort(
+  a,
+  b
+) {
 
-  return a.name.localeCompare(
-    b.name,
+  return a.localeCompare(
+    b,
     undefined,
     {
       numeric: true,
       sensitivity: "base"
     }
+  );
+
+}
+
+
+function naturalFileSort(
+  a,
+  b
+) {
+
+  return naturalNameSort(
+    a.name,
+    b.name
   );
 
 }
@@ -948,13 +972,16 @@ function encodeBase64Utf8(text) {
 
 
   bytes.forEach(
-    byte =>
+    byte => {
       binary +=
-        String.fromCharCode(byte)
+        String.fromCharCode(byte);
+    }
   );
 
 
-  return btoa(binary);
+  return btoa(
+    binary
+  );
 
 }
 
@@ -1002,6 +1029,116 @@ async function loadEverything() {
 
   await loadSlides();
 
+
+  /*
+    The GitHub slides folder is the
+    source of truth for what exists.
+
+    Rebuild the manifest from the real
+    files so unusual filenames are
+    included automatically.
+  */
+
+  const actualNames =
+    files
+      .map(
+        file =>
+          file.name
+      )
+      .sort(
+        naturalNameSort
+      );
+
+
+  /*
+    Remove hidden names for files that
+    no longer exist.
+  */
+
+  const actualNameSet =
+    new Set(
+      actualNames
+    );
+
+
+  hiddenSlides =
+    new Set(
+
+      Array.from(
+        hiddenSlides
+      )
+      .filter(
+        name =>
+          actualNameSet.has(
+            name
+          )
+      )
+
+    );
+
+
+  const oldManifest =
+    [...manifestSlides]
+      .sort(
+        naturalNameSort
+      );
+
+
+  manifestSlides =
+    actualNames;
+
+
+  renderSlides();
+
+
+  /*
+    Automatically upgrade the old
+    hidden-only config to the new
+    manifest config.
+
+    This also repairs the manifest if
+    the GitHub folder changed.
+  */
+
+  const manifestChanged =
+
+    !configHadSlideList ||
+
+    JSON.stringify(
+      oldManifest
+    ) !==
+    JSON.stringify(
+      actualNames
+    );
+
+
+  if (
+    manifestChanged &&
+    getToken()
+  ) {
+
+    const saved =
+      await saveConfig(
+        "Sync Atrium slide manifest"
+      );
+
+
+    if (
+      saved
+    ) {
+
+      setLiveStatus(
+        "waiting",
+        "Slide list updated — Atrium updating..."
+      );
+
+
+      await waitForConfigDeployment();
+
+    }
+
+  }
+
 }
 
 
@@ -1015,8 +1152,14 @@ async function loadConfig() {
   hiddenSlides =
     new Set();
 
+  manifestSlides =
+    [];
+
   configSha =
     null;
+
+  configHadSlideList =
+    false;
 
 
   try {
@@ -1027,7 +1170,8 @@ async function loadConfig() {
         `${API}/contents/${CONFIG_PATH}?ref=${BRANCH}&v=${Date.now()}`,
 
         {
-          cache: "no-store",
+          cache:
+            "no-store",
 
           headers: {
             "Accept":
@@ -1038,11 +1182,6 @@ async function loadConfig() {
       );
 
 
-    /*
-      404 is normal before the first
-      slide has ever been hidden.
-    */
-
     if (
       response.status === 404
     ) {
@@ -1052,7 +1191,9 @@ async function loadConfig() {
     }
 
 
-    if (!response.ok) {
+    if (
+      !response.ok
+    ) {
 
       throw new Error(
         `Config returned ${response.status}`
@@ -1076,7 +1217,9 @@ async function loadConfig() {
 
 
     const config =
-      JSON.parse(text);
+      JSON.parse(
+        text
+      );
 
 
     if (
@@ -1089,6 +1232,22 @@ async function loadConfig() {
         new Set(
           config.hidden
         );
+
+    }
+
+
+    if (
+      Array.isArray(
+        config.slides
+      )
+    ) {
+
+      manifestSlides =
+        [...config.slides];
+
+
+      configHadSlideList =
+        true;
 
     }
 
@@ -1108,7 +1267,7 @@ async function loadConfig() {
 
 
 /* =====================================================
-   SAVE CONFIG
+   SAVE CONFIG / MANIFEST
 ===================================================== */
 
 async function saveConfig(
@@ -1123,9 +1282,11 @@ async function saveConfig(
 
     showTokenBox();
 
+
     alert(
       "Enter your GitHub token first."
     );
+
 
     return false;
 
@@ -1134,20 +1295,18 @@ async function saveConfig(
 
   const config = {
 
+    slides:
+      [...manifestSlides]
+        .sort(
+          naturalNameSort
+        ),
+
     hidden:
       Array.from(
         hiddenSlides
       )
       .sort(
-        (a, b) =>
-          a.localeCompare(
-            b,
-            undefined,
-            {
-              numeric: true,
-              sensitivity: "base"
-            }
-          )
+        naturalNameSort
       )
 
   };
@@ -1160,11 +1319,13 @@ async function saveConfig(
 
     content:
       encodeBase64Utf8(
+
         JSON.stringify(
           config,
           null,
           2
         ) + "\n"
+
       ),
 
     branch:
@@ -1173,7 +1334,9 @@ async function saveConfig(
   };
 
 
-  if (configSha) {
+  if (
+    configSha
+  ) {
 
     payload.sha =
       configSha;
@@ -1231,7 +1394,9 @@ async function saveConfig(
     }
 
 
-    if (!response.ok) {
+    if (
+      !response.ok
+    ) {
 
       console.error(
         await response.text()
@@ -1239,7 +1404,7 @@ async function saveConfig(
 
 
       alert(
-        "GitHub could not update the hidden-slide list."
+        "GitHub could not update the Atrium slide list."
       );
 
 
@@ -1263,17 +1428,23 @@ async function saveConfig(
     }
 
 
+    configHadSlideList =
+      true;
+
+
     return true;
 
   }
 
   catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     alert(
-      "Unable to update the hidden-slide list."
+      "Unable to update the Atrium slide list."
     );
 
 
@@ -1286,7 +1457,7 @@ async function saveConfig(
 
 
 /* =====================================================
-   LOAD SLIDES
+   LOAD SLIDES DIRECTORY
 ===================================================== */
 
 async function loadSlides() {
@@ -1299,7 +1470,8 @@ async function loadSlides() {
         `${API}/contents/${FOLDER}?ref=${BRANCH}&v=${Date.now()}`,
 
         {
-          cache: "no-store",
+          cache:
+            "no-store",
 
           headers: {
             "Accept":
@@ -1310,7 +1482,9 @@ async function loadSlides() {
       );
 
 
-    if (!response.ok) {
+    if (
+      !response.ok
+    ) {
 
       throw new Error(
         `GitHub returned ${response.status}`
@@ -1330,21 +1504,22 @@ async function loadSlides() {
           file =>
             file.type === "file" &&
             /\.(jpg|jpeg|png|webp)$/i
-              .test(file.name)
+              .test(
+                file.name
+              )
         )
 
         .sort(
-          naturalSort
+          naturalFileSort
         );
-
-
-    renderSlides();
 
   }
 
   catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     setStatus(
@@ -1358,10 +1533,12 @@ async function loadSlides() {
 
 
 /* =====================================================
-   FILTER
+   FILTERS
 ===================================================== */
 
-function setFilter(filter) {
+function setFilter(
+  filter
+) {
 
   currentFilter =
     filter;
@@ -1380,10 +1557,13 @@ function setFilter(filter) {
 
 
   const id =
+
     filter === "all"
       ? "filterAll"
+
       : filter === "active"
         ? "filterActive"
+
         : "filterHidden";
 
 
@@ -1682,7 +1862,9 @@ function renderSlides() {
       visibilityButton.onclick =
         function() {
 
-          if (isHidden) {
+          if (
+            isHidden
+          ) {
 
             showSlide(
               file.name
@@ -1740,19 +1922,27 @@ function renderSlides() {
    SELECTION
 ===================================================== */
 
-function toggleFile(path) {
+function toggleFile(
+  path
+) {
 
   if (
-    selected.has(path)
+    selected.has(
+      path
+    )
   ) {
 
-    selected.delete(path);
+    selected.delete(
+      path
+    );
 
   }
 
   else {
 
-    selected.add(path);
+    selected.add(
+      path
+    );
 
   }
 
@@ -1781,6 +1971,7 @@ function selectAllVisible() {
 function clearSelection() {
 
   selected.clear();
+
 
   updateSelection();
 
@@ -1815,7 +2006,9 @@ function updateSelection() {
           );
 
 
-        if (checkbox) {
+        if (
+          checkbox
+        ) {
 
           checkbox.checked =
             selected.has(
@@ -1832,7 +2025,7 @@ function updateSelection() {
 
 
 /* =====================================================
-   HIDE SLIDE
+   HIDE
 ===================================================== */
 
 async function hideSlide(
@@ -1870,13 +2063,17 @@ async function hideSlide(
     );
 
 
-  if (!saved) {
+  if (
+    !saved
+  ) {
 
     hiddenSlides.delete(
       fileName
     );
 
+
     renderSlides();
+
 
     return;
 
@@ -1890,7 +2087,7 @@ async function hideSlide(
 
 
 /* =====================================================
-   SHOW SLIDE
+   SHOW
 ===================================================== */
 
 async function showSlide(
@@ -1928,13 +2125,17 @@ async function showSlide(
     );
 
 
-  if (!saved) {
+  if (
+    !saved
+  ) {
 
     hiddenSlides.add(
       fileName
     );
 
+
     renderSlides();
+
 
     return;
 
@@ -1957,13 +2158,17 @@ async function deleteSelected() {
     getToken();
 
 
-  if (!token) {
+  if (
+    !token
+  ) {
 
     showTokenBox();
+
 
     alert(
       "Enter your GitHub token first."
     );
+
 
     return;
 
@@ -2000,12 +2205,14 @@ async function deleteSelected() {
   const confirmed =
     confirm(
 
-      `Permanently delete ${selectedFiles.length} slide(s)?\n\n${names}\n\nFor reusable announcements, use Hide instead.`
+      `Permanently delete ${selectedFiles.length} slide(s)?\n\n${names}\n\nUse Hide instead for slides you may reuse.`
 
     );
 
 
-  if (!confirmed) {
+  if (
+    !confirmed
+  ) {
 
     return;
 
@@ -2017,9 +2224,6 @@ async function deleteSelected() {
 
   let failed =
     0;
-
-  let configChanged =
-    false;
 
 
   for (
@@ -2091,12 +2295,15 @@ async function deleteSelected() {
       }
 
 
-      if (!response.ok) {
+      if (
+        !response.ok
+      ) {
 
         console.error(
           file.name,
           await response.text()
         );
+
 
         failed++;
 
@@ -2107,20 +2314,17 @@ async function deleteSelected() {
         deleted++;
 
 
-        if (
-          hiddenSlides.has(
-            file.name
-          )
-        ) {
+        hiddenSlides.delete(
+          file.name
+        );
 
-          hiddenSlides.delete(
-            file.name
+
+        manifestSlides =
+          manifestSlides.filter(
+            name =>
+              name !==
+              file.name
           );
-
-          configChanged =
-            true;
-
-        }
 
       }
 
@@ -2128,7 +2332,10 @@ async function deleteSelected() {
 
     catch (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
+
 
       failed++;
 
@@ -2138,11 +2345,11 @@ async function deleteSelected() {
 
 
   if (
-    configChanged
+    deleted > 0
   ) {
 
     await saveConfig(
-      "Clean deleted slides from Atrium hidden list"
+      "Update Atrium manifest after deleting slides"
     );
 
   }
@@ -2151,11 +2358,25 @@ async function deleteSelected() {
   selected.clear();
 
 
-  await loadEverything();
+  await loadSlides();
+
+
+  manifestSlides =
+    files
+      .map(
+        file =>
+          file.name
+      )
+      .sort(
+        naturalNameSort
+      );
+
+
+  renderSlides();
 
 
   if (
-    failed
+    failed > 0
   ) {
 
     alert(
@@ -2214,6 +2435,7 @@ const filePicker =
 
         event.stopPropagation();
 
+
         dropZone.classList.add(
           "dragover"
         );
@@ -2243,6 +2465,7 @@ const filePicker =
         event.preventDefault();
 
         event.stopPropagation();
+
 
         dropZone.classList.remove(
           "dragover"
@@ -2305,18 +2528,21 @@ function addUploadFiles(
     )
     .filter(
       file =>
-        /\.(jpg|jpeg|png)$/i
+        /\.(jpg|jpeg|png|webp)$/i
           .test(
             file.name
           )
     );
 
 
-  if (!incoming.length) {
+  if (
+    !incoming.length
+  ) {
 
     alert(
-      "No JPG or PNG images were found."
+      "No JPG, PNG, or WebP images were found."
     );
+
 
     return;
 
@@ -2362,7 +2588,14 @@ function addUploadFiles(
 
 
   uploadQueue.sort(
-    naturalSort
+    (
+      a,
+      b
+    ) =>
+      naturalNameSort(
+        a.name,
+        b.name
+      )
   );
 
 
@@ -2373,7 +2606,7 @@ function addUploadFiles(
 
 
 /* =====================================================
-   UPLOAD PREVIEW
+   PREVIEW
 ===================================================== */
 
 function renderUploadPreview() {
@@ -2485,7 +2718,7 @@ function renderUploadPreview() {
 
 
 /* =====================================================
-   CLEAR UPLOAD QUEUE
+   CLEAR QUEUE
 ===================================================== */
 
 function clearUploadQueue() {
@@ -2523,13 +2756,9 @@ function fileToBase64(
       reader.onload =
         () => {
 
-
-          const result =
-            reader.result;
-
-
           resolve(
-            result.split(",")[1]
+            reader.result
+              .split(",")[1]
           );
 
         };
@@ -2579,7 +2808,10 @@ async function sha256Blob(
     byte =>
       byte
         .toString(16)
-        .padStart(2, "0")
+        .padStart(
+          2,
+          "0"
+        )
   )
   .join("");
 
@@ -2588,7 +2820,7 @@ async function sha256Blob(
 
 
 /* =====================================================
-   FIND EXISTING
+   FIND EXISTING FILE
 ===================================================== */
 
 function findExistingFile(
@@ -2617,20 +2849,26 @@ async function uploadFiles() {
     getToken();
 
 
-  if (!token) {
+  if (
+    !token
+  ) {
 
     showTokenBox();
+
 
     alert(
       "Enter your GitHub token first."
     );
+
 
     return;
 
   }
 
 
-  if (!uploadQueue.length) {
+  if (
+    !uploadQueue.length
+  ) {
 
     return;
 
@@ -2640,12 +2878,14 @@ async function uploadFiles() {
   const confirmed =
     confirm(
 
-      `Upload ${uploadQueue.length} image(s) to the Atrium?\n\nMatching filenames will be replaced. Hidden slides will remain hidden.`
+      `Upload ${uploadQueue.length} image(s) to the Atrium?\n\nMatching filenames will be replaced. Hidden slides remain hidden.`
 
     );
 
 
-  if (!confirmed) {
+  if (
+    !confirmed
+  ) {
 
     return;
 
@@ -2771,20 +3011,25 @@ async function uploadFiles() {
 
         authorizationFailed();
 
+
         uploadButton.disabled =
           false;
+
 
         return;
 
       }
 
 
-      if (!response.ok) {
+      if (
+        !response.ok
+      ) {
 
         console.error(
           file.name,
           await response.text()
         );
+
 
         failed++;
 
@@ -2800,7 +3045,10 @@ async function uploadFiles() {
 
     catch (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
+
 
       failed++;
 
@@ -2820,11 +3068,58 @@ async function uploadFiles() {
   renderUploadPreview();
 
 
-  await loadEverything();
+  /*
+    Reload the folder after uploading,
+    then create the manifest from every
+    real image that now exists.
+  */
+
+  await loadSlides();
+
+
+  manifestSlides =
+    files
+      .map(
+        file =>
+          file.name
+      )
+      .sort(
+        naturalNameSort
+      );
+
+
+  const actualNameSet =
+    new Set(
+      manifestSlides
+    );
+
+
+  hiddenSlides =
+    new Set(
+
+      Array.from(
+        hiddenSlides
+      )
+      .filter(
+        name =>
+          actualNameSet.has(
+            name
+          )
+      )
+
+    );
+
+
+  await saveConfig(
+    "Update Atrium slide manifest"
+  );
+
+
+  renderSlides();
 
 
   if (
-    failed
+    failed > 0
   ) {
 
     document.getElementById(
@@ -2866,7 +3161,7 @@ async function uploadFiles() {
 
 
 /* =====================================================
-   VERIFY UPLOADED IMAGE ON NETLIFY
+   VERIFY UPLOAD ON NETLIFY
 ===================================================== */
 
 async function waitForAtriumFile(
@@ -2887,12 +3182,16 @@ async function waitForAtriumFile(
 
   catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
+
 
     setLiveStatus(
       "error",
       "Upload succeeded, but live verification could not start."
     );
+
 
     return;
 
@@ -2949,10 +3248,14 @@ async function waitForAtriumFile(
           localHash
         ) {
 
-          setLiveStatus(
-            "live",
-            "✓ Atrium is live with the new slides"
-          );
+          /*
+            The image is live. Also make
+            sure the manifest itself has
+            arrived.
+          */
+
+          await waitForConfigDeployment();
+
 
           return;
 
@@ -2995,26 +3298,25 @@ async function waitForAtriumFile(
 
 
 /* =====================================================
-   VERIFY CONFIG ON NETLIFY
+   VERIFY MANIFEST ON NETLIFY
 ===================================================== */
 
 async function waitForConfigDeployment() {
 
-  const expected =
+  const expectedSlides =
+    [...manifestSlides]
+      .sort(
+        naturalNameSort
+      );
+
+
+  const expectedHidden =
     Array.from(
       hiddenSlides
     )
-    .sort(
-      (a, b) =>
-        a.localeCompare(
-          b,
-          undefined,
-          {
-            numeric: true,
-            sensitivity: "base"
-          }
-        )
-    );
+      .sort(
+        naturalNameSort
+      );
 
 
   await sleep(
@@ -3056,6 +3358,19 @@ async function waitForConfigDeployment() {
           await response.json();
 
 
+        const liveSlides =
+          Array.isArray(
+            config.slides
+          )
+
+            ? [...config.slides]
+                .sort(
+                  naturalNameSort
+                )
+
+            : [];
+
+
         const liveHidden =
           Array.isArray(
             config.hidden
@@ -3063,35 +3378,39 @@ async function waitForConfigDeployment() {
 
             ? [...config.hidden]
                 .sort(
-                  (a, b) =>
-                    a.localeCompare(
-                      b,
-                      undefined,
-                      {
-                        numeric: true,
-                        sensitivity: "base"
-                      }
-                    )
+                  naturalNameSort
                 )
 
             : [];
 
 
         if (
+
+          JSON.stringify(
+            liveSlides
+          ) ===
+          JSON.stringify(
+            expectedSlides
+          )
+
+          &&
+
           JSON.stringify(
             liveHidden
           ) ===
           JSON.stringify(
-            expected
+            expectedHidden
           )
+
         ) {
 
           setLiveStatus(
             "live",
-            "✓ Atrium is live"
+            "✓ Atrium is live with the current slide list"
           );
 
-          return;
+
+          return true;
 
         }
 
@@ -3102,7 +3421,7 @@ async function waitForConfigDeployment() {
     catch (error) {
 
       console.log(
-        "Waiting for Atrium config...",
+        "Waiting for Atrium manifest...",
         error
       );
 
@@ -3124,8 +3443,11 @@ async function waitForConfigDeployment() {
 
   setLiveStatus(
     "error",
-    "GitHub was updated, but the Atrium deployment could not be confirmed yet."
+    "GitHub updated, but the Atrium deployment could not be confirmed yet."
   );
+
+
+  return false;
 
 }
 
