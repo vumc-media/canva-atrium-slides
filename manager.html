@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>VUMC Atrium Slide Manager</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #111;
+    color: #fff;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #181818;
+    border-bottom: 1px solid #333;
+    padding: 18px 24px;
+  }
+
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+  }
+
+  header p {
+    margin: 0;
+    color: #aaa;
+    font-size: 14px;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  button {
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:hover {
+    opacity: .9;
+  }
+
+  .primary {
+    background: #fff;
+    color: #111;
+  }
+
+  .danger {
+    background: #d93025;
+    color: white;
+  }
+
+  .danger:disabled {
+    background: #555;
+    cursor: not-allowed;
+  }
+
+  .token-area {
+    padding: 18px 24px;
+    background: #202020;
+    border-bottom: 1px solid #333;
+  }
+
+  .token-row {
+    display: flex;
+    gap: 10px;
+    max-width: 900px;
+  }
+
+  input[type="password"] {
+    flex: 1;
+    padding: 11px 12px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #111;
+    color: white;
+    font-size: 14px;
+  }
+
+  #status {
+    padding: 14px 24px;
+    color: #bbb;
+  }
+
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    padding: 0 24px 40px;
+  }
+
+  .card {
+    position: relative;
+    background: #1c1c1c;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: .15s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: #666;
+  }
+
+  .card.selected {
+    border-color: #ff5252;
+  }
+
+  .card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: black;
+  }
+
+  .info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .info input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .filename {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .selected-count {
+    margin-left: auto;
+    padding: 11px 14px;
+    background: #292929;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .token-row {
+      flex-direction: column;
+    }
+
+    #grid {
+      grid-template-columns: 1fr;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    header,
+    .token-area,
+    #status {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>VUMC Atrium Slide Manager</h1>
+  <p>Manage the images currently displayed on the Atrium slideshow.</p>
+
+  <div class="toolbar">
+    <button class="primary" onclick="selectAll()">Select All</button>
+    <button class="primary" onclick="clearSelection()">Clear Selection</button>
+
+    <button
+      id="deleteButton"
+      class="danger"
+      onclick="deleteSelected()"
+      disabled>
+      Delete Selected
+    </button>
+
+    <div class="selected-count">
+      <span id="count">0</span> selected
+    </div>
+  </div>
+</header>
+
+
+<div class="token-area">
+
+  <div class="token-row">
+    <input
+      id="token"
+      type="password"
+      placeholder="GitHub Personal Access Token">
+
+    <button class="primary" onclick="saveToken()">
+      Use Token
+    </button>
+
+    <button class="primary" onclick="loadSlides()">
+      Refresh Slides
+    </button>
+  </div>
+
+</div>
+
+
+<div id="status">
+  Loading slides...
+</div>
+
+<div id="grid"></div>
+
+
+<script>
+
+const OWNER = "vumc-media";
+const REPO = "canva-atrium-slides";
+const BRANCH = "main";
+const FOLDER = "slides";
+
+const API =
+  `https://api.github.com/repos/${OWNER}/${REPO}`;
+
+let files = [];
+let selected = new Set();
+
+
+/* ---------------------------------------------------
+   TOKEN
+--------------------------------------------------- */
+
+function saveToken() {
+
+  const token =
+    document.getElementById("token").value.trim();
+
+  if (!token) {
+    alert("Enter your GitHub token first.");
+    return;
+  }
+
+  sessionStorage.setItem(
+    "atriumGithubToken",
+    token
+  );
+
+  document.getElementById("token").value = "";
+
+  setStatus("GitHub token loaded for this browser session.");
+
+}
+
+
+function getToken() {
+
+  return sessionStorage.getItem(
+    "atriumGithubToken"
+  );
+
+}
+
+
+/* ---------------------------------------------------
+   STATUS
+--------------------------------------------------- */
+
+function setStatus(message) {
+
+  document.getElementById("status").textContent =
+    message;
+
+}
+
+
+/* ---------------------------------------------------
+   LOAD SLIDES
+--------------------------------------------------- */
+
+async function loadSlides() {
+
+  setStatus("Loading slides...");
+
+  selected.clear();
+  updateSelection();
+
+  try {
+
+    const response = await fetch(
+      `${API}/contents/${FOLDER}?ref=${BRANCH}`,
+      {
+        headers: {
+          "Accept":
+            "application/vnd.github+json"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `GitHub returned ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+
+    files = data
+      .filter(file =>
+        file.type === "file" &&
+        /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+      )
+      .sort(naturalSort);
+
+    renderSlides();
+
+    setStatus(
+      `${files.length} slide images loaded.`
+    );
+
+  }
+  catch (error) {
+
+    console.error(error);
+
+    setStatus(
+      "Unable to load the slides folder."
+    );
+
+  }
+
+}
+
+
+/* ---------------------------------------------------
+   NATURAL SORT
+--------------------------------------------------- */
+
+function naturalSort(a, b) {
+
+  return a.name.localeCompare(
+    b.name,
+    undefined,
+    {
+      numeric: true,
+      sensitivity: "base"
+    }
+  );
+
+}
+
+
+/* ---------------------------------------------------
+   RENDER
+--------------------------------------------------- */
+
+function renderSlides() {
+
+  const grid =
+    document.getElementById("grid");
+
+  grid.innerHTML = "";
+
+  files.forEach(file => {
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+    card.dataset.path = file.path;
+
+    card.onclick = function(event) {
+
+      if (event.target.type === "checkbox") {
+        return;
+      }
+
+      toggleFile(file.path);
+
+    };
+
+
+    const image =
+      document.createElement("img");
+
+    /*
+      Add timestamp to prevent stale browser
+      thumbnails after a replacement.
+    */
+
+    image.src =
+      `${file.download_url}?v=${Date.now()}`;
+
+    image.alt = file.name;
+
+
+    const info =
+      document.createElement("div");
+
+    info.className = "info";
+
+
+    const checkbox =
+      document.createElement("input");
+
+    checkbox.type = "checkbox";
+
+    checkbox.onchange = function() {
+      toggleFile(file.path);
+    };
+
+
+    const filename =
+      document.createElement("div");
+
+    filename.className = "filename";
+
+    filename.textContent = file.name;
+
+
+    info.appendChild(checkbox);
+    info.appendChild(filename);
+
+    card.appendChild(image);
+    card.appendChild(info);
+
+    grid.appendChild(card);
+
+  });
+
+}
+
+
+/* ---------------------------------------------------
+   SELECTION
+--------------------------------------------------- */
+
+function toggleFile(path) {
+
+  if (selected.has(path)) {
+    selected.delete(path);
+  }
+  else {
+    selected.add(path);
+  }
+
+  updateSelection();
+
+}
+
+
+function selectAll() {
+
+  files.forEach(file =>
+    selected.add(file.path)
+  );
+
+  updateSelection();
+
+}
+
+
+function clearSelection() {
+
+  selected.clear();
+
+  updateSelection();
+
+}
+
+
+function updateSelection() {
+
+  document.getElementById("count").textContent =
+    selected.size;
+
+  document.getElementById("deleteButton").disabled =
+    selected.size === 0;
+
+
+  document.querySelectorAll(".card")
+    .forEach(card => {
+
+      const checked =
+        selected.has(card.dataset.path);
+
+      card.classList.toggle(
+        "selected",
+        checked
+      );
+
+      const checkbox =
+        card.querySelector(
+          'input[type="checkbox"]'
+        );
+
+      if (checkbox) {
+        checkbox.checked = checked;
+      }
+
+    });
+
+}
+
+
+/* ---------------------------------------------------
+   DELETE
+--------------------------------------------------- */
+
+async function deleteSelected() {
+
+  const token = getToken();
+
+  if (!token) {
+
+    alert(
+      "Enter your GitHub Personal Access Token and click Use Token first."
+    );
+
+    return;
+
+  }
+
+
+  if (selected.size === 0) {
+    return;
+  }
+
+
+  const selectedFiles =
+    files.filter(file =>
+      selected.has(file.path)
+    );
+
+
+  const names =
+    selectedFiles
+      .map(file => file.name)
+      .join("\n");
+
+
+  const confirmed = confirm(
+    `Delete ${selectedFiles.length} slide(s)?\n\n${names}\n\nThis will remove them from the live Atrium slideshow.`
+  );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  document.getElementById(
+    "deleteButton"
+  ).disabled = true;
+
+
+  let deleted = 0;
+  let failed = 0;
+
+
+  for (const file of selectedFiles) {
+
+    setStatus(
+      `Deleting ${file.name}...`
+    );
+
+
+    try {
+
+      const response = await fetch(
+        `${API}/contents/${file.path}`,
+        {
+          method: "DELETE",
+
+          headers: {
+
+            "Authorization":
+              `Bearer ${token}`,
+
+            "Accept":
+              "application/vnd.github+json",
+
+            "Content-Type":
+              "application/json",
+
+            "X-GitHub-Api-Version":
+              "2022-11-28"
+
+          },
+
+          body: JSON.stringify({
+
+            message:
+              `Remove Atrium slide ${file.name}`,
+
+            sha: file.sha,
+
+            branch: BRANCH
+
+          })
+
+        }
+      );
+
+
+      if (!response.ok) {
+
+        const error =
+          await response.text();
+
+        console.error(
+          file.name,
+          error
+        );
+
+        failed++;
+
+      }
+      else {
+
+        deleted++;
+
+      }
+
+    }
+    catch (error) {
+
+      console.error(error);
+
+      failed++;
+
+    }
+
+  }
+
+
+  if (failed > 0) {
+
+    setStatus(
+      `${deleted} deleted. ${failed} failed.`
+    );
+
+    alert(
+      `${deleted} slide(s) deleted.\n${failed} failed.`
+    );
+
+  }
+  else {
+
+    setStatus(
+      `${deleted} slide(s) deleted successfully. Netlify will update automatically.`
+    );
+
+  }
+
+
+  await loadSlides();
+
+}
+
+
+/* ---------------------------------------------------
+   START
+--------------------------------------------------- */
+
+window.addEventListener(
+  "DOMContentLoaded",
+  loadSlides
+);
+
+</script>
+
+</body>
+</html>
