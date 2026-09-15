@@ -262,10 +262,10 @@ function saveToken() {
     return;
   }
 
-  sessionStorage.setItem(
-    "atriumGithubToken",
-    token
-  );
+  localStorage.setItem(
+  "atriumGithubToken",
+  token
+);
 
   document.getElementById("token").value = "";
 
@@ -276,9 +276,9 @@ function saveToken() {
 
 function getToken() {
 
-  return sessionStorage.getItem(
-    "atriumGithubToken"
-  );
+  return localStorage.getItem(
+  "atriumGithubToken"
+);
 
 }
 
