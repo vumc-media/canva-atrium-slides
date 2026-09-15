@@ -1,22 +1,37 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
 <title>VUMC Atrium Slide Manager</title>
 
+
 <style>
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   background: #111;
   color: #fff;
 }
+
+
+/* =====================================================
+   HEADER
+===================================================== */
 
 header {
   position: sticky;
@@ -38,6 +53,7 @@ header p {
   font-size: 14px;
 }
 
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -45,6 +61,7 @@ header p {
   margin-top: 16px;
   align-items: center;
 }
+
 
 button {
   border: 0;
@@ -64,6 +81,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
+
 .primary {
   background: #fff;
   color: #111;
@@ -79,6 +97,7 @@ button:disabled {
   color: white;
 }
 
+
 .selected-count {
   margin-left: auto;
   padding: 11px 14px;
@@ -87,13 +106,17 @@ button:disabled {
   font-weight: 600;
 }
 
-/* CONNECTION */
+
+/* =====================================================
+   GITHUB CONNECTION
+===================================================== */
 
 .connection-area {
   padding: 14px 24px;
   background: #202020;
   border-bottom: 1px solid #333;
 }
+
 
 .connected-row,
 .token-row {
@@ -103,10 +126,12 @@ button:disabled {
   max-width: 900px;
 }
 
+
 .connected-status {
   color: #7ee787;
   font-weight: 700;
 }
+
 
 input[type="password"] {
   flex: 1;
@@ -118,17 +143,22 @@ input[type="password"] {
   font-size: 14px;
 }
 
-/* UPLOAD */
+
+/* =====================================================
+   UPLOAD AREA
+===================================================== */
 
 .upload-section {
   padding: 22px 24px;
   border-bottom: 1px solid #333;
 }
 
+
 .upload-section h2 {
   margin: 0 0 12px;
   font-size: 20px;
 }
+
 
 .drop-zone {
   border: 2px dashed #666;
@@ -140,10 +170,17 @@ input[type="password"] {
   cursor: pointer;
 }
 
+
+.drop-zone:hover {
+  border-color: #999;
+}
+
+
 .drop-zone.dragover {
   border-color: #7ee787;
   background: #202820;
 }
+
 
 .drop-zone strong {
   display: block;
@@ -151,25 +188,35 @@ input[type="password"] {
   margin-bottom: 6px;
 }
 
+
 .drop-zone span {
   color: #aaa;
   font-size: 14px;
 }
 
+
 #filePicker {
   display: none;
 }
 
+
+/* =====================================================
+   UPLOAD PREVIEW
+===================================================== */
+
 .upload-preview {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns:
+    repeat(auto-fill, minmax(180px, 1fr));
   gap: 12px;
   margin-top: 16px;
 }
 
+
 .upload-preview:empty {
   display: none;
 }
+
 
 .preview-card {
   background: #222;
@@ -177,6 +224,7 @@ input[type="password"] {
   overflow: hidden;
   border: 1px solid #444;
 }
+
 
 .preview-card img {
   display: block;
@@ -186,6 +234,7 @@ input[type="password"] {
   background: #000;
 }
 
+
 .preview-name {
   padding: 8px;
   font-size: 12px;
@@ -194,35 +243,112 @@ input[type="password"] {
   white-space: nowrap;
 }
 
+
 .upload-actions {
   display: none;
   gap: 10px;
   margin-top: 15px;
+  flex-wrap: wrap;
 }
+
 
 .upload-actions.visible {
   display: flex;
-  flex-wrap: wrap;
 }
+
 
 .upload-progress {
   margin-top: 12px;
   color: #aaa;
 }
 
-/* CURRENT SLIDES */
+
+/* =====================================================
+   LIVE ATRIUM STATUS
+===================================================== */
+
+.live-status {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  background: #222;
+  font-weight: 700;
+}
+
+
+.live-status.waiting {
+  display: flex;
+  background: #332d16;
+  color: #ffd866;
+}
+
+
+.live-status.live {
+  display: flex;
+  background: #17351f;
+  color: #7ee787;
+}
+
+
+.live-status.error {
+  display: flex;
+  background: #3b1d1d;
+  color: #ff8a80;
+}
+
+
+.status-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+
+.live-status.waiting .status-dot {
+  animation: pulse 1.2s infinite;
+}
+
+
+@keyframes pulse {
+
+  0% {
+    opacity: .35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: .35;
+  }
+
+}
+
+
+/* =====================================================
+   CURRENT SLIDES
+===================================================== */
 
 #status {
   padding: 18px 24px 14px;
   color: #bbb;
 }
 
+
 #grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns:
+    repeat(auto-fill, minmax(260px, 1fr));
   gap: 18px;
   padding: 0 24px 40px;
 }
+
 
 .card {
   position: relative;
@@ -234,14 +360,17 @@ input[type="password"] {
   transition: .15s ease;
 }
 
+
 .card:hover {
   transform: translateY(-2px);
   border-color: #666;
 }
 
+
 .card.selected {
   border-color: #ff5252;
 }
+
 
 .card img {
   display: block;
@@ -251,6 +380,7 @@ input[type="password"] {
   background: black;
 }
 
+
 .info {
   display: flex;
   align-items: center;
@@ -258,10 +388,12 @@ input[type="password"] {
   padding: 12px;
 }
 
+
 .info input {
   width: 20px;
   height: 20px;
 }
+
 
 .filename {
   font-size: 14px;
@@ -269,6 +401,11 @@ input[type="password"] {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media (max-width: 600px) {
 
@@ -278,15 +415,18 @@ input[type="password"] {
     align-items: stretch;
   }
 
+
   .selected-count {
     margin-left: 0;
   }
+
 
   #grid {
     grid-template-columns: 1fr;
     padding-left: 12px;
     padding-right: 12px;
   }
+
 
   header,
   .connection-area,
@@ -295,44 +435,78 @@ input[type="password"] {
     padding-left: 14px;
     padding-right: 14px;
   }
+
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
+<!-- ===================================================
+     HEADER
+=================================================== -->
+
 <header>
 
-  <h1>VUMC Atrium Slide Manager</h1>
+  <h1>
+    VUMC Atrium Slide Manager
+  </h1>
 
   <p>
-    Manage the images currently displayed on the Atrium slideshow.
+    Manage the images currently displayed
+    on the Atrium slideshow.
   </p>
+
 
   <div class="toolbar">
 
-    <button class="primary" onclick="selectAll()">
+    <button
+      class="primary"
+      onclick="selectAll()">
+
       Select All
+
     </button>
 
-    <button class="primary" onclick="clearSelection()">
+
+    <button
+      class="primary"
+      onclick="clearSelection()">
+
       Clear Selection
+
     </button>
+
 
     <button
       id="deleteButton"
       class="danger"
       onclick="deleteSelected()"
       disabled>
+
       Delete Selected
+
     </button>
 
-    <button class="primary" onclick="loadSlides()">
-      Refresh
+
+    <button
+      class="primary"
+      onclick="loadSlides()">
+
+      Refresh Slides
+
     </button>
+
 
     <div class="selected-count">
-      <span id="count">0</span> selected
+
+      <span id="count">0</span>
+      selected
+
     </div>
 
   </div>
@@ -340,32 +514,56 @@ input[type="password"] {
 </header>
 
 
-<!-- GITHUB CONNECTION -->
+
+<!-- ===================================================
+     GITHUB CONNECTION
+=================================================== -->
 
 <div class="connection-area">
 
-  <div id="connectedRow" class="connected-row" style="display:none;">
+
+  <div
+    id="connectedRow"
+    class="connected-row"
+    style="display:none;">
+
 
     <span class="connected-status">
+
       ✓ GitHub Connected
+
     </span>
 
-    <button class="primary" onclick="showTokenBox()">
+
+    <button
+      class="primary"
+      onclick="showTokenBox()">
+
       Change Token
+
     </button>
 
   </div>
 
 
-  <div id="tokenRow" class="token-row">
+
+  <div
+    id="tokenRow"
+    class="token-row">
+
 
     <input
       id="token"
       type="password"
       placeholder="GitHub Personal Access Token">
 
-    <button class="primary" onclick="saveToken()">
+
+    <button
+      class="primary"
+      onclick="saveToken()">
+
       Save Token
+
     </button>
 
   </div>
@@ -373,18 +571,29 @@ input[type="password"] {
 </div>
 
 
-<!-- UPLOAD -->
+
+<!-- ===================================================
+     UPLOAD
+=================================================== -->
 
 <section class="upload-section">
 
-  <h2>Add / Replace Slides</h2>
+
+  <h2>
+    Add / Replace Slides
+  </h2>
+
 
   <div
     id="dropZone"
     class="drop-zone"
     onclick="document.getElementById('filePicker').click()">
 
-    <strong>Drop Canva JPGs here</strong>
+
+    <strong>
+      Drop Canva JPGs here
+    </strong>
+
 
     <span>
       or click here to choose images
@@ -392,64 +601,121 @@ input[type="password"] {
 
   </div>
 
+
   <input
     id="filePicker"
     type="file"
     accept=".jpg,.jpeg,.png"
     multiple>
 
+
   <div
     id="uploadPreview"
     class="upload-preview">
   </div>
 
+
   <div
     id="uploadActions"
     class="upload-actions">
+
 
     <button
       id="uploadButton"
       class="upload-button"
       onclick="uploadFiles()">
+
       Upload to Atrium
+
     </button>
+
 
     <button
       class="primary"
       onclick="clearUploadQueue()">
+
       Cancel
+
     </button>
 
   </div>
+
 
   <div
     id="uploadProgress"
     class="upload-progress">
   </div>
 
+
+  <div
+    id="liveStatus"
+    class="live-status">
+
+
+    <span class="status-dot"></span>
+
+
+    <span id="liveStatusText">
+
+      Checking Atrium...
+
+    </span>
+
+  </div>
+
 </section>
 
 
+
+<!-- ===================================================
+     CURRENT SLIDES
+=================================================== -->
+
 <div id="status">
+
   Loading slides...
+
 </div>
+
 
 <div id="grid"></div>
 
 
+
 <script>
 
-const OWNER = "vumc-media";
-const REPO = "canva-atrium-slides";
-const BRANCH = "main";
-const FOLDER = "slides";
+/* =====================================================
+   CONFIGURATION
+===================================================== */
+
+const OWNER =
+  "vumc-media";
+
+const REPO =
+  "canva-atrium-slides";
+
+const BRANCH =
+  "main";
+
+const FOLDER =
+  "slides";
+
+const ATRIUM_URL =
+  "https://canvaslides.netlify.app";
+
 
 const API =
   `https://api.github.com/repos/${OWNER}/${REPO}`;
 
+
 let files = [];
-let selected = new Set();
-let uploadQueue = [];
+
+let selected =
+  new Set();
+
+let uploadQueue =
+  [];
+
 
 
 /* =====================================================
@@ -468,19 +734,32 @@ function getToken() {
 function saveToken() {
 
   const token =
-    document.getElementById("token").value.trim();
+    document
+      .getElementById("token")
+      .value
+      .trim();
+
 
   if (!token) {
-    alert("Enter your GitHub token first.");
+
+    alert(
+      "Enter your GitHub token first."
+    );
+
     return;
+
   }
+
 
   localStorage.setItem(
     "atriumGithubToken",
     token
   );
 
-  document.getElementById("token").value = "";
+
+  document.getElementById("token").value =
+    "";
+
 
   updateConnectionUI();
 
@@ -489,10 +768,15 @@ function saveToken() {
 
 function showTokenBox() {
 
-  document.getElementById("connectedRow").style.display =
+  document.getElementById(
+    "connectedRow"
+  ).style.display =
     "none";
 
-  document.getElementById("tokenRow").style.display =
+
+  document.getElementById(
+    "tokenRow"
+  ).style.display =
     "flex";
 
 }
@@ -500,23 +784,36 @@ function showTokenBox() {
 
 function updateConnectionUI() {
 
-  const token = getToken();
+  const token =
+    getToken();
+
 
   if (token) {
 
-    document.getElementById("connectedRow").style.display =
+    document.getElementById(
+      "connectedRow"
+    ).style.display =
       "flex";
 
-    document.getElementById("tokenRow").style.display =
+
+    document.getElementById(
+      "tokenRow"
+    ).style.display =
       "none";
 
   }
+
   else {
 
-    document.getElementById("connectedRow").style.display =
+    document.getElementById(
+      "connectedRow"
+    ).style.display =
       "none";
 
-    document.getElementById("tokenRow").style.display =
+
+    document.getElementById(
+      "tokenRow"
+    ).style.display =
       "flex";
 
   }
@@ -530,7 +827,9 @@ function authorizationFailed() {
     "atriumGithubToken"
   );
 
+
   updateConnectionUI();
+
 
   alert(
     "GitHub authorization has expired or is no longer valid. Enter a new token to reconnect."
@@ -539,72 +838,59 @@ function authorizationFailed() {
 }
 
 
+
 /* =====================================================
    STATUS
 ===================================================== */
 
 function setStatus(message) {
 
-  document.getElementById("status").textContent =
+  document.getElementById(
+    "status"
+  ).textContent =
     message;
 
 }
 
 
+function setLiveStatus(
+  type,
+  message
+) {
+
+  const box =
+    document.getElementById(
+      "liveStatus"
+    );
+
+
+  const text =
+    document.getElementById(
+      "liveStatusText"
+    );
+
+
+  box.className =
+    `live-status ${type}`;
+
+
+  text.textContent =
+    message;
+
+}
+
+
+
 /* =====================================================
-   LOAD SLIDES
+   HELPERS
 ===================================================== */
 
-async function loadSlides() {
+function sleep(ms) {
 
-  setStatus("Loading slides...");
-
-  selected.clear();
-  updateSelection();
-
-  try {
-
-    const response = await fetch(
-      `${API}/contents/${FOLDER}?ref=${BRANCH}`,
-      {
-        headers: {
-          "Accept":
-            "application/vnd.github+json"
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `GitHub returned ${response.status}`
-      );
-    }
-
-    const data = await response.json();
-
-    files = data
-      .filter(file =>
-        file.type === "file" &&
-        /\.(jpg|jpeg|png|webp)$/i.test(file.name)
-      )
-      .sort(naturalSort);
-
-    renderSlides();
-
-    setStatus(
-      `${files.length} slide images loaded.`
-    );
-
-  }
-  catch (error) {
-
-    console.error(error);
-
-    setStatus(
-      "Unable to load the slides folder."
-    );
-
-  }
+  return new Promise(
+    resolve =>
+      setTimeout(resolve, ms)
+  );
 
 }
 
@@ -623,6 +909,94 @@ function naturalSort(a, b) {
 }
 
 
+
+/* =====================================================
+   LOAD CURRENT SLIDES
+===================================================== */
+
+async function loadSlides() {
+
+  setStatus(
+    "Loading slides..."
+  );
+
+
+  selected.clear();
+
+  updateSelection();
+
+
+  try {
+
+    const response =
+      await fetch(
+
+        `${API}/contents/${FOLDER}?ref=${BRANCH}`,
+
+        {
+          cache: "no-store",
+
+          headers: {
+            "Accept":
+              "application/vnd.github+json"
+          }
+        }
+
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `GitHub returned ${response.status}`
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    files =
+      data
+
+        .filter(file =>
+
+          file.type === "file" &&
+
+          /\.(jpg|jpeg|png|webp)$/i
+            .test(file.name)
+
+        )
+
+        .sort(naturalSort);
+
+
+    renderSlides();
+
+
+    setStatus(
+      `${files.length} slide images loaded.`
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+
+    setStatus(
+      "Unable to load the slides folder."
+    );
+
+  }
+
+}
+
+
+
 /* =====================================================
    RENDER CURRENT SLIDES
 ===================================================== */
@@ -630,72 +1004,143 @@ function naturalSort(a, b) {
 function renderSlides() {
 
   const grid =
-    document.getElementById("grid");
+    document.getElementById(
+      "grid"
+    );
 
-  grid.innerHTML = "";
+
+  grid.innerHTML =
+    "";
+
 
   files.forEach(file => {
 
+
     const card =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    card.className = "card";
-    card.dataset.path = file.path;
 
-    card.onclick = function(event) {
+    card.className =
+      "card";
 
-      if (event.target.type === "checkbox") {
-        return;
-      }
 
-      toggleFile(file.path);
+    card.dataset.path =
+      file.path;
 
-    };
+
+    card.onclick =
+      function(event) {
+
+        if (
+          event.target.type ===
+          "checkbox"
+        ) {
+
+          return;
+
+        }
+
+
+        toggleFile(
+          file.path
+        );
+
+      };
+
 
 
     const image =
-      document.createElement("img");
+      document.createElement(
+        "img"
+      );
+
 
     image.src =
       `${file.download_url}?v=${Date.now()}`;
 
-    image.alt = file.name;
+
+    image.alt =
+      file.name;
+
 
 
     const info =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    info.className = "info";
+
+    info.className =
+      "info";
+
 
 
     const checkbox =
-      document.createElement("input");
+      document.createElement(
+        "input"
+      );
 
-    checkbox.type = "checkbox";
 
-    checkbox.onchange = function() {
-      toggleFile(file.path);
-    };
+    checkbox.type =
+      "checkbox";
+
+
+    checkbox.onchange =
+      function() {
+
+        toggleFile(
+          file.path
+        );
+
+      };
+
 
 
     const filename =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    filename.className = "filename";
-    filename.textContent = file.name;
+
+    filename.className =
+      "filename";
 
 
-    info.appendChild(checkbox);
-    info.appendChild(filename);
+    filename.textContent =
+      file.name;
 
-    card.appendChild(image);
-    card.appendChild(info);
 
-    grid.appendChild(card);
+
+    info.appendChild(
+      checkbox
+    );
+
+
+    info.appendChild(
+      filename
+    );
+
+
+    card.appendChild(
+      image
+    );
+
+
+    card.appendChild(
+      info
+    );
+
+
+    grid.appendChild(
+      card
+    );
 
   });
 
 }
+
 
 
 /* =====================================================
@@ -704,12 +1149,20 @@ function renderSlides() {
 
 function toggleFile(path) {
 
-  if (selected.has(path)) {
+  if (
+    selected.has(path)
+  ) {
+
     selected.delete(path);
+
   }
+
   else {
+
     selected.add(path);
+
   }
+
 
   updateSelection();
 
@@ -718,9 +1171,13 @@ function toggleFile(path) {
 
 function selectAll() {
 
-  files.forEach(file =>
-    selected.add(file.path)
+  files.forEach(
+    file =>
+      selected.add(
+        file.path
+      )
   );
+
 
   updateSelection();
 
@@ -730,6 +1187,7 @@ function selectAll() {
 function clearSelection() {
 
   selected.clear();
+
   updateSelection();
 
 }
@@ -737,30 +1195,48 @@ function clearSelection() {
 
 function updateSelection() {
 
-  document.getElementById("count").textContent =
+  document.getElementById(
+    "count"
+  ).textContent =
     selected.size;
 
-  document.getElementById("deleteButton").disabled =
+
+  document.getElementById(
+    "deleteButton"
+  ).disabled =
     selected.size === 0;
 
-  document.querySelectorAll(".card")
+
+  document
+    .querySelectorAll(
+      ".card"
+    )
     .forEach(card => {
 
+
       const checked =
-        selected.has(card.dataset.path);
+        selected.has(
+          card.dataset.path
+        );
+
 
       card.classList.toggle(
         "selected",
         checked
       );
 
+
       const checkbox =
         card.querySelector(
           'input[type="checkbox"]'
         );
 
+
       if (checkbox) {
-        checkbox.checked = checked;
+
+        checkbox.checked =
+          checked;
+
       }
 
     });
@@ -768,21 +1244,26 @@ function updateSelection() {
 }
 
 
+
 /* =====================================================
-   DELETE
+   DELETE SLIDES
 ===================================================== */
 
 async function deleteSelected() {
 
-  const token = getToken();
+  const token =
+    getToken();
+
 
   if (!token) {
 
     showTokenBox();
 
+
     alert(
       "Enter your GitHub token first."
     );
+
 
     return;
 
@@ -790,35 +1271,64 @@ async function deleteSelected() {
 
 
   const selectedFiles =
-    files.filter(file =>
-      selected.has(file.path)
+    files.filter(
+      file =>
+        selected.has(
+          file.path
+        )
     );
 
 
-  if (!selectedFiles.length) {
+  if (
+    !selectedFiles.length
+  ) {
+
     return;
+
   }
 
 
-  const confirmed = confirm(
-    `Delete ${selectedFiles.length} selected slide(s)?\n\nThey will be removed from the Atrium slideshow.`
-  );
+  const names =
+    selectedFiles
+      .map(
+        file =>
+          file.name
+      )
+      .join("\n");
+
+
+  const confirmed =
+    confirm(
+
+      `Delete ${selectedFiles.length} slide(s)?\n\n${names}\n\nThey will be removed from the live Atrium slideshow.`
+
+    );
 
 
   if (!confirmed) {
+
     return;
+
   }
 
 
-  document.getElementById("deleteButton").disabled =
+  document.getElementById(
+    "deleteButton"
+  ).disabled =
     true;
 
 
-  let deleted = 0;
-  let failed = 0;
+  let deleted =
+    0;
+
+  let failed =
+    0;
 
 
-  for (const file of selectedFiles) {
+  for (
+    const file of selectedFiles
+  ) {
+
 
     setStatus(
       `Deleting ${file.name}...`
@@ -827,450 +1337,17 @@ async function deleteSelected() {
 
     try {
 
-      const response = await fetch(
-        `${API}/contents/${file.path}`,
-        {
-          method: "DELETE",
-
-          headers: {
-
-            "Authorization":
-              `Bearer ${token}`,
-
-            "Accept":
-              "application/vnd.github+json",
-
-            "Content-Type":
-              "application/json",
-
-            "X-GitHub-Api-Version":
-              "2022-11-28"
-
-          },
-
-          body: JSON.stringify({
-
-            message:
-              `Remove Atrium slide ${file.name}`,
-
-            sha: file.sha,
-
-            branch: BRANCH
-
-          })
-
-        }
-      );
-
-
-      if (
-        response.status === 401 ||
-        response.status === 403
-      ) {
-
-        authorizationFailed();
-        return;
-
-      }
-
-
-      if (!response.ok) {
-
-        console.error(
-          file.name,
-          await response.text()
-        );
-
-        failed++;
-
-      }
-      else {
-
-        deleted++;
-
-      }
-
-    }
-    catch (error) {
-
-      console.error(error);
-      failed++;
-
-    }
-
-  }
-
-
-  if (failed) {
-
-    alert(
-      `${deleted} deleted.\n${failed} failed.`
-    );
-
-  }
-
-
-  await loadSlides();
-
-}
-
-
-/* =====================================================
-   DRAG / DROP
-===================================================== */
-
-const dropZone =
-  document.getElementById("dropZone");
-
-const filePicker =
-  document.getElementById("filePicker");
-
-
-["dragenter", "dragover"].forEach(eventName => {
-
-  dropZone.addEventListener(
-    eventName,
-    event => {
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      dropZone.classList.add(
-        "dragover"
-      );
-
-    }
-  );
-
-});
-
-
-["dragleave", "drop"].forEach(eventName => {
-
-  dropZone.addEventListener(
-    eventName,
-    event => {
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      dropZone.classList.remove(
-        "dragover"
-      );
-
-    }
-  );
-
-});
-
-
-dropZone.addEventListener(
-  "drop",
-  event => {
-
-    addUploadFiles(
-      event.dataTransfer.files
-    );
-
-  }
-);
-
-
-filePicker.addEventListener(
-  "change",
-  event => {
-
-    addUploadFiles(
-      event.target.files
-    );
-
-    filePicker.value = "";
-
-  }
-);
-
-
-/* =====================================================
-   UPLOAD QUEUE
-===================================================== */
-
-function addUploadFiles(fileList) {
-
-  const incoming =
-    Array.from(fileList)
-      .filter(file =>
-        /\.(jpg|jpeg|png)$/i.test(file.name)
-      );
-
-
-  if (!incoming.length) {
-
-    alert(
-      "No JPG or PNG images were found."
-    );
-
-    return;
-
-  }
-
-
-  incoming.forEach(file => {
-
-    const existingIndex =
-      uploadQueue.findIndex(
-        queued =>
-          queued.name.toLowerCase() ===
-          file.name.toLowerCase()
-      );
-
-
-    if (existingIndex >= 0) {
-
-      uploadQueue[existingIndex] =
-        file;
-
-    }
-    else {
-
-      uploadQueue.push(file);
-
-    }
-
-  });
-
-
-  uploadQueue.sort((a, b) =>
-    a.name.localeCompare(
-      b.name,
-      undefined,
-      {
-        numeric: true,
-        sensitivity: "base"
-      }
-    )
-  );
-
-
-  renderUploadPreview();
-
-}
-
-
-function renderUploadPreview() {
-
-  const preview =
-    document.getElementById(
-      "uploadPreview"
-    );
-
-  preview.innerHTML = "";
-
-
-  uploadQueue.forEach(file => {
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "preview-card";
-
-
-    const img =
-      document.createElement("img");
-
-    const objectURL =
-      URL.createObjectURL(file);
-
-    img.src = objectURL;
-
-    img.onload = () =>
-      URL.revokeObjectURL(objectURL);
-
-
-    const name =
-      document.createElement("div");
-
-    name.className =
-      "preview-name";
-
-    name.textContent =
-      file.name;
-
-
-    card.appendChild(img);
-    card.appendChild(name);
-
-    preview.appendChild(card);
-
-  });
-
-
-  document.getElementById(
-    "uploadActions"
-  ).classList.toggle(
-    "visible",
-    uploadQueue.length > 0
-  );
-
-
-  document.getElementById(
-    "uploadProgress"
-  ).textContent =
-    uploadQueue.length
-      ? `${uploadQueue.length} image(s) ready to upload.`
-      : "";
-
-}
-
-
-function clearUploadQueue() {
-
-  uploadQueue = [];
-
-  renderUploadPreview();
-
-}
-
-
-/* =====================================================
-   FILE → BASE64
-===================================================== */
-
-function fileToBase64(file) {
-
-  return new Promise(
-    (resolve, reject) => {
-
-      const reader =
-        new FileReader();
-
-      reader.onload = () => {
-
-        const result =
-          reader.result;
-
-        const base64 =
-          result.split(",")[1];
-
-        resolve(base64);
-
-      };
-
-      reader.onerror =
-        reject;
-
-      reader.readAsDataURL(file);
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   FIND EXISTING FILE
-===================================================== */
-
-function findExistingFile(name) {
-
-  return files.find(file =>
-    file.name.toLowerCase() ===
-    name.toLowerCase()
-  );
-
-}
-
-
-/* =====================================================
-   UPLOAD FILES
-===================================================== */
-
-async function uploadFiles() {
-
-  const token = getToken();
-
-  if (!token) {
-
-    showTokenBox();
-
-    alert(
-      "Enter your GitHub token first."
-    );
-
-    return;
-
-  }
-
-
-  if (!uploadQueue.length) {
-    return;
-  }
-
-
-  const confirmed = confirm(
-    `Upload ${uploadQueue.length} image(s) to the Atrium slideshow?\n\nExisting files with the same names will be replaced.`
-  );
-
-
-  if (!confirmed) {
-    return;
-  }
-
-
-  const uploadButton =
-    document.getElementById(
-      "uploadButton"
-    );
-
-  uploadButton.disabled = true;
-
-
-  let completed = 0;
-  let failed = 0;
-
-
-  for (const file of uploadQueue) {
-
-    document.getElementById(
-      "uploadProgress"
-    ).textContent =
-      `Uploading ${file.name} (${completed + 1} of ${uploadQueue.length})...`;
-
-
-    try {
-
-      const content =
-        await fileToBase64(file);
-
-      const existing =
-        findExistingFile(file.name);
-
-
-      const payload = {
-
-        message:
-          existing
-            ? `Update Atrium slide ${file.name}`
-            : `Add Atrium slide ${file.name}`,
-
-        content: content,
-
-        branch: BRANCH
-
-      };
-
-
-      if (existing) {
-        payload.sha = existing.sha;
-      }
-
 
       const response =
         await fetch(
-          `${API}/contents/${FOLDER}/${encodeURIComponent(file.name)}`,
+
+          `${API}/contents/${file.path}`,
+
           {
 
-            method: "PUT",
+            method:
+              "DELETE",
+
 
             headers: {
 
@@ -1288,10 +1365,23 @@ async function uploadFiles() {
 
             },
 
+
             body:
-              JSON.stringify(payload)
+              JSON.stringify({
+
+                message:
+                  `Remove Atrium slide ${file.name}`,
+
+                sha:
+                  file.sha,
+
+                branch:
+                  BRANCH
+
+              })
 
           }
+
         );
 
 
@@ -1302,34 +1392,39 @@ async function uploadFiles() {
 
         authorizationFailed();
 
-        uploadButton.disabled =
-          false;
-
         return;
 
       }
 
 
-      if (!response.ok) {
+      if (
+        !response.ok
+      ) {
 
         console.error(
           file.name,
           await response.text()
         );
 
+
         failed++;
 
       }
+
       else {
 
-        completed++;
+        deleted++;
 
       }
 
     }
+
     catch (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
+
 
       failed++;
 
@@ -1338,38 +1433,984 @@ async function uploadFiles() {
   }
 
 
-  uploadButton.disabled = false;
+  if (
+    failed > 0
+  ) {
+
+    alert(
+      `${deleted} slide(s) deleted.\n${failed} failed.`
+    );
+
+  }
 
 
-  if (failed) {
+  else {
+
+    setStatus(
+      `${deleted} slide(s) deleted. Atrium will update automatically.`
+    );
+
+  }
+
+
+  await loadSlides();
+
+}
+
+
+
+/* =====================================================
+   DRAG / DROP
+===================================================== */
+
+const dropZone =
+  document.getElementById(
+    "dropZone"
+  );
+
+
+const filePicker =
+  document.getElementById(
+    "filePicker"
+  );
+
+
+[
+  "dragenter",
+  "dragover"
+]
+.forEach(
+  eventName => {
+
+
+    dropZone.addEventListener(
+
+      eventName,
+
+      event => {
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        dropZone.classList.add(
+          "dragover"
+        );
+
+      }
+
+    );
+
+  }
+);
+
+
+[
+  "dragleave",
+  "drop"
+]
+.forEach(
+  eventName => {
+
+
+    dropZone.addEventListener(
+
+      eventName,
+
+      event => {
+
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        dropZone.classList.remove(
+          "dragover"
+        );
+
+      }
+
+    );
+
+  }
+);
+
+
+dropZone.addEventListener(
+
+  "drop",
+
+  event => {
+
+    addUploadFiles(
+      event.dataTransfer.files
+    );
+
+  }
+
+);
+
+
+filePicker.addEventListener(
+
+  "change",
+
+  event => {
+
+    addUploadFiles(
+      event.target.files
+    );
+
+
+    filePicker.value =
+      "";
+
+  }
+
+);
+
+
+
+/* =====================================================
+   UPLOAD QUEUE
+===================================================== */
+
+function addUploadFiles(
+  fileList
+) {
+
+
+  const incoming =
+    Array.from(
+      fileList
+    )
+    .filter(
+      file =>
+        /\.(jpg|jpeg|png)$/i
+          .test(
+            file.name
+          )
+    );
+
+
+  if (
+    !incoming.length
+  ) {
+
+    alert(
+      "No JPG or PNG images were found."
+    );
+
+    return;
+
+  }
+
+
+  incoming.forEach(
+    file => {
+
+
+      const existingIndex =
+        uploadQueue.findIndex(
+
+          queued =>
+            queued.name.toLowerCase() ===
+            file.name.toLowerCase()
+
+        );
+
+
+      if (
+        existingIndex >= 0
+      ) {
+
+        uploadQueue[
+          existingIndex
+        ] =
+          file;
+
+      }
+
+      else {
+
+        uploadQueue.push(
+          file
+        );
+
+      }
+
+    }
+
+  );
+
+
+  uploadQueue.sort(
+    naturalSort
+  );
+
+
+  renderUploadPreview();
+
+}
+
+
+
+/* =====================================================
+   UPLOAD PREVIEW
+===================================================== */
+
+function renderUploadPreview() {
+
+  const preview =
+    document.getElementById(
+      "uploadPreview"
+    );
+
+
+  preview.innerHTML =
+    "";
+
+
+  uploadQueue.forEach(
+    file => {
+
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "preview-card";
+
+
+
+      const img =
+        document.createElement(
+          "img"
+        );
+
+
+      const objectURL =
+        URL.createObjectURL(
+          file
+        );
+
+
+      img.src =
+        objectURL;
+
+
+      img.onload =
+        () =>
+          URL.revokeObjectURL(
+            objectURL
+          );
+
+
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+
+      name.className =
+        "preview-name";
+
+
+      name.textContent =
+        file.name;
+
+
+
+      card.appendChild(
+        img
+      );
+
+
+      card.appendChild(
+        name
+      );
+
+
+      preview.appendChild(
+        card
+      );
+
+    }
+
+  );
+
+
+  document.getElementById(
+    "uploadActions"
+  )
+  .classList.toggle(
+
+    "visible",
+
+    uploadQueue.length > 0
+
+  );
+
+
+  if (
+    uploadQueue.length
+  ) {
 
     document.getElementById(
       "uploadProgress"
     ).textContent =
-      `${completed} uploaded. ${failed} failed.`;
 
-    alert(
-      `${completed} image(s) uploaded.\n${failed} failed.`
-    );
+      `${uploadQueue.length} image(s) ready to upload.`;
 
   }
+
   else {
 
     document.getElementById(
       "uploadProgress"
     ).textContent =
-      `${completed} image(s) uploaded successfully. Netlify will update automatically.`;
+      "";
+
+  }
+
+}
+
+
+
+/* =====================================================
+   CLEAR UPLOAD QUEUE
+===================================================== */
+
+function clearUploadQueue() {
+
+  uploadQueue =
+    [];
+
+
+  renderUploadPreview();
+
+
+  document.getElementById(
+    "liveStatus"
+  ).className =
+    "live-status";
+
+}
+
+
+
+/* =====================================================
+   FILE → BASE64
+===================================================== */
+
+function fileToBase64(
+  file
+) {
+
+  return new Promise(
+
+    (
+      resolve,
+      reject
+    ) => {
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        () => {
+
+
+          const result =
+            reader.result;
+
+
+          const base64 =
+            result.split(
+              ","
+            )[1];
+
+
+          resolve(
+            base64
+          );
+
+        };
+
+
+      reader.onerror =
+        reject;
+
+
+      reader.readAsDataURL(
+        file
+      );
+
+    }
+
+  );
+
+}
+
+
+
+/* =====================================================
+   SHA-256 HASH
+===================================================== */
+
+async function sha256Blob(
+  blob
+) {
+
+  const buffer =
+    await blob.arrayBuffer();
+
+
+  const digest =
+    await crypto.subtle.digest(
+      "SHA-256",
+      buffer
+    );
+
+
+  return Array.from(
+    new Uint8Array(
+      digest
+    )
+  )
+  .map(
+    byte =>
+      byte
+        .toString(16)
+        .padStart(2, "0")
+  )
+  .join("");
+
+}
+
+
+
+/* =====================================================
+   FIND EXISTING FILE
+===================================================== */
+
+function findExistingFile(
+  name
+) {
+
+  return files.find(
+
+    file =>
+      file.name.toLowerCase() ===
+      name.toLowerCase()
+
+  );
+
+}
+
+
+
+/* =====================================================
+   VERIFY NETLIFY HAS NEW IMAGE
+===================================================== */
+
+async function waitForAtriumFile(
+  uploadedFile
+) {
+
+
+  setLiveStatus(
+
+    "waiting",
+
+    "Slides uploaded — Atrium updating..."
+
+  );
+
+
+  let localHash;
+
+
+  try {
+
+    localHash =
+      await sha256Blob(
+        uploadedFile
+      );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Could not hash local file:",
+      error
+    );
+
+
+    setLiveStatus(
+
+      "error",
+
+      "Upload succeeded, but live verification could not be started."
+
+    );
+
+
+    return false;
 
   }
 
 
-  uploadQueue = [];
+  /*
+    Give Netlify a moment to receive
+    the GitHub change.
+  */
+
+  await sleep(
+    4000
+  );
+
+
+  const maxChecks =
+    30;
+
+  const delay =
+    4000;
+
+
+  for (
+    let attempt = 1;
+    attempt <= maxChecks;
+    attempt++
+  ) {
+
+
+    try {
+
+
+      const url =
+
+        `${ATRIUM_URL}/slides/${encodeURIComponent(uploadedFile.name)}?deploycheck=${Date.now()}`;
+
+
+      const response =
+        await fetch(
+
+          url,
+
+          {
+            method:
+              "GET",
+
+            cache:
+              "no-store"
+          }
+
+        );
+
+
+      if (
+        response.ok
+      ) {
+
+
+        const liveBlob =
+          await response.blob();
+
+
+        const liveHash =
+          await sha256Blob(
+            liveBlob
+          );
+
+
+        if (
+          liveHash ===
+          localHash
+        ) {
+
+
+          setLiveStatus(
+
+            "live",
+
+            "✓ Atrium is live with the new slides"
+
+          );
+
+
+          return true;
+
+        }
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.log(
+
+        "Waiting for Atrium deployment...",
+
+        error
+
+      );
+
+    }
+
+
+    setLiveStatus(
+
+      "waiting",
+
+      `Atrium updating... check ${attempt} of ${maxChecks}`
+
+    );
+
+
+    await sleep(
+      delay
+    );
+
+  }
+
+
+  setLiveStatus(
+
+    "error",
+
+    "Upload succeeded, but the live Atrium update could not be confirmed yet."
+
+  );
+
+
+  return false;
+
+}
+
+
+
+/* =====================================================
+   UPLOAD FILES
+===================================================== */
+
+async function uploadFiles() {
+
+  const token =
+    getToken();
+
+
+  if (
+    !token
+  ) {
+
+    showTokenBox();
+
+
+    alert(
+      "Enter your GitHub token first."
+    );
+
+
+    return;
+
+  }
+
+
+  if (
+    !uploadQueue.length
+  ) {
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+
+      `Upload ${uploadQueue.length} image(s) to the Atrium slideshow?\n\nExisting files with matching names will be replaced.`
+
+    );
+
+
+  if (
+    !confirmed
+  ) {
+
+    return;
+
+  }
+
+
+  const uploadButton =
+    document.getElementById(
+      "uploadButton"
+    );
+
+
+  uploadButton.disabled =
+    true;
+
+
+  let completed =
+    0;
+
+  let failed =
+    0;
+
+
+  /*
+    Save a copy before clearing
+    the upload queue.
+  */
+
+  const filesBeingUploaded =
+    [...uploadQueue];
+
+
+  for (
+    const file of filesBeingUploaded
+  ) {
+
+
+    document.getElementById(
+      "uploadProgress"
+    ).textContent =
+
+      `Uploading ${file.name} (${completed + failed + 1} of ${filesBeingUploaded.length})...`;
+
+
+    try {
+
+
+      const content =
+        await fileToBase64(
+          file
+        );
+
+
+      const existing =
+        findExistingFile(
+          file.name
+        );
+
+
+      const payload = {
+
+        message:
+          existing
+
+            ? `Update Atrium slide ${file.name}`
+
+            : `Add Atrium slide ${file.name}`,
+
+        content:
+          content,
+
+        branch:
+          BRANCH
+
+      };
+
+
+      if (
+        existing
+      ) {
+
+        payload.sha =
+          existing.sha;
+
+      }
+
+
+      const response =
+        await fetch(
+
+          `${API}/contents/${FOLDER}/${encodeURIComponent(file.name)}`,
+
+          {
+
+            method:
+              "PUT",
+
+
+            headers: {
+
+              "Authorization":
+                `Bearer ${token}`,
+
+              "Accept":
+                "application/vnd.github+json",
+
+              "Content-Type":
+                "application/json",
+
+              "X-GitHub-Api-Version":
+                "2022-11-28"
+
+            },
+
+
+            body:
+              JSON.stringify(
+                payload
+              )
+
+          }
+
+        );
+
+
+      if (
+        response.status === 401 ||
+        response.status === 403
+      ) {
+
+        authorizationFailed();
+
+
+        uploadButton.disabled =
+          false;
+
+
+        return;
+
+      }
+
+
+      if (
+        !response.ok
+      ) {
+
+        console.error(
+
+          file.name,
+
+          await response.text()
+
+        );
+
+
+        failed++;
+
+      }
+
+      else {
+
+        completed++;
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      failed++;
+
+    }
+
+  }
+
+
+  uploadButton.disabled =
+    false;
+
+
+  if (
+    failed > 0
+  ) {
+
+
+    document.getElementById(
+      "uploadProgress"
+    ).textContent =
+
+      `${completed} uploaded. ${failed} failed.`;
+
+
+    alert(
+
+      `${completed} image(s) uploaded.\n${failed} failed.`
+
+    );
+
+  }
+
+  else {
+
+
+    document.getElementById(
+      "uploadProgress"
+    ).textContent =
+
+      `${completed} image(s) uploaded successfully.`;
+
+
+    setLiveStatus(
+
+      "waiting",
+
+      "Slides uploaded — Atrium updating..."
+
+    );
+
+  }
+
+
+  uploadQueue =
+    [];
+
 
   renderUploadPreview();
 
+
   await loadSlides();
 
+
+  /*
+    If every upload succeeded,
+    verify one of the actual uploaded
+    JPGs against Netlify.
+
+    Since Netlify deploys the entire
+    GitHub commit history, once this
+    exact new image is live, we know
+    production has received the update.
+  */
+
+  if (
+    failed === 0 &&
+    filesBeingUploaded.length
+  ) {
+
+
+    await waitForAtriumFile(
+
+      filesBeingUploaded[0]
+
+    );
+
+  }
+
 }
+
 
 
 /* =====================================================
@@ -1377,16 +2418,24 @@ async function uploadFiles() {
 ===================================================== */
 
 window.addEventListener(
+
   "DOMContentLoaded",
+
   () => {
 
+
     updateConnectionUI();
+
+
     loadSlides();
 
   }
+
 );
 
 </script>
 
+
 </body>
+
 </html>
