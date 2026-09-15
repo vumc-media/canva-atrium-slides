@@ -32,11 +32,16 @@ body {
 .slide {
   position: absolute;
   inset: 0;
+
   width: 100%;
   height: 100%;
+
   object-fit: contain;
+
   opacity: 0;
-  transition: opacity 1.2s ease-in-out;
+
+  transition:
+    opacity 1.2s ease-in-out;
 }
 
 
@@ -67,13 +72,17 @@ body {
 .arrow {
   position: fixed;
   top: 50%;
-  transform: translateY(-50%);
+
+  transform:
+    translateY(-50%);
+
   z-index: 10;
 
   width: 78px;
   height: 120px;
 
   border: none;
+
   border-radius: 18px;
 
   background:
@@ -184,43 +193,20 @@ body {
 <script>
 
 /* =====================================================
-   SETTINGS
+   CONFIGURATION
 ===================================================== */
 
 const SLIDE_FOLDER =
   "slides";
 
-const EXT =
-  "jpg";
-
 const CONFIG_FILE =
   "slides-config.json";
-
-const FIRST_SLIDE =
-  0;
-
-const LAST_SLIDE =
-  60;
 
 const SECONDS_PER_SLIDE =
   15;
 
 const FADE_SECONDS =
   1.2;
-
-
-/*
-  Unique cache value each time the
-  slideshow page is opened.
-
-  This is better than the previous
-  once-per-day cache value because
-  replaced slides can update immediately
-  when PP7/browser reloads the page.
-*/
-
-const CACHE_TAG =
-  Date.now();
 
 
 const imgA =
@@ -234,8 +220,17 @@ const imgB =
   );
 
 
-let current =
-  null;
+let slideList =
+  [];
+
+let hiddenSlides =
+  new Set();
+
+let activeSlides =
+  [];
+
+let currentIndex =
+  -1;
 
 let front =
   imgA;
@@ -249,13 +244,10 @@ let isTransitioning =
 let timer =
   null;
 
-let hiddenSlides =
-  new Set();
-
 
 
 /* =====================================================
-   CONFIG
+   LOAD MANIFEST
 ===================================================== */
 
 async function loadConfig() {
@@ -275,25 +267,29 @@ async function loadConfig() {
       );
 
 
-    /*
-      No config yet means everything
-      is active.
-    */
-
     if (
       !response.ok
     ) {
 
-      hiddenSlides =
-        new Set();
-
-      return;
+      throw new Error(
+        `Config returned ${response.status}`
+      );
 
     }
 
 
     const config =
       await response.json();
+
+
+    slideList =
+      Array.isArray(
+        config.slides
+      )
+
+        ? config.slides
+
+        : [];
 
 
     hiddenSlides =
@@ -309,18 +305,39 @@ async function loadConfig() {
 
       );
 
+
+    activeSlides =
+      slideList.filter(
+        fileName =>
+          !hiddenSlides.has(
+            fileName
+          )
+      );
+
+
+    return true;
+
   }
 
   catch (error) {
 
-    console.warn(
-      "Unable to load hidden slide configuration.",
+    console.error(
+      "Unable to load slide manifest:",
       error
     );
 
 
+    slideList =
+      [];
+
     hiddenSlides =
       new Set();
+
+    activeSlides =
+      [];
+
+
+    return false;
 
   }
 
@@ -329,31 +346,26 @@ async function loadConfig() {
 
 
 /* =====================================================
-   SLIDE HELPERS
+   URL
 ===================================================== */
 
-function slideFileName(n) {
+function slideUrl(
+  fileName
+) {
 
-  return `slide${n}.${EXT}`;
+  return (
 
-}
+    `${SLIDE_FOLDER}/${encodeURIComponent(fileName)}?v=${Date.now()}`
 
-
-function slideUrl(n) {
-
-  return `${SLIDE_FOLDER}/${slideFileName(n)}?v=${CACHE_TAG}`;
-
-}
-
-
-function isHidden(n) {
-
-  return hiddenSlides.has(
-    slideFileName(n)
   );
 
 }
 
+
+
+/* =====================================================
+   IMAGE LOADER
+===================================================== */
 
 function loadImage(
   img,
@@ -363,14 +375,19 @@ function loadImage(
   return new Promise(
     resolve => {
 
+
       img.onload =
         () =>
-          resolve(true);
+          resolve(
+            true
+          );
 
 
       img.onerror =
         () =>
-          resolve(false);
+          resolve(
+            false
+          );
 
 
       img.src =
@@ -384,73 +401,24 @@ function loadImage(
 
 
 /* =====================================================
-   FIND NEXT CANDIDATE
+   FIND NEXT LOADABLE SLIDE
 ===================================================== */
 
-function nextCandidate(
-  start,
-  step,
+async function findNextSlide(
   direction
 ) {
 
   const total =
-    LAST_SLIDE -
-    FIRST_SLIDE +
-    1;
-
-
-  const index =
-    start -
-    FIRST_SLIDE;
-
-
-  let nextIndex;
+    activeSlides.length;
 
 
   if (
-    direction === 1
+    total === 0
   ) {
 
-    nextIndex =
-      (index + step) %
-      total;
+    return null;
 
   }
-
-  else {
-
-    nextIndex =
-      (
-        index -
-        step +
-        total * 10
-      ) %
-      total;
-
-  }
-
-
-  return (
-    FIRST_SLIDE +
-    nextIndex
-  );
-
-}
-
-
-
-/* =====================================================
-   FIND AVAILABLE ACTIVE SLIDE
-===================================================== */
-
-async function findSlide(
-  direction = 1
-) {
-
-  const total =
-    LAST_SLIDE -
-    FIRST_SLIDE +
-    1;
 
 
   for (
@@ -460,40 +428,64 @@ async function findSlide(
   ) {
 
 
-    const candidate =
-      nextCandidate(
-        current,
-        step,
-        direction
-      );
+    let candidateIndex;
 
-
-    /*
-      Skip hidden slides before even
-      trying to load the image.
-    */
 
     if (
-      isHidden(
-        candidate
-      )
+      direction === 1
     ) {
 
-      continue;
+      candidateIndex =
+        (
+          currentIndex +
+          step
+        ) %
+        total;
+
+    }
+
+    else {
+
+      candidateIndex =
+        (
+          currentIndex -
+          step +
+          total * 10
+        ) %
+        total;
 
     }
 
 
-    if (
+    const fileName =
+      activeSlides[
+        candidateIndex
+      ];
+
+
+    const loaded =
       await loadImage(
+
         back,
+
         slideUrl(
-          candidate
+          fileName
         )
-      )
+
+      );
+
+
+    if (
+      loaded
     ) {
 
-      return candidate;
+      return {
+        index:
+          candidateIndex,
+
+        fileName:
+          fileName
+      };
 
     }
 
@@ -515,8 +507,7 @@ async function advance(
 ) {
 
   if (
-    isTransitioning ||
-    current === null
+    isTransitioning
   ) {
 
     return;
@@ -529,26 +520,57 @@ async function advance(
 
 
   /*
-    Reload hidden-slide configuration
-    before advancing.
-
-    This means a Hide/Show change can
-    reach an already-open Atrium screen
-    without requiring a complete browser
-    restart.
+    Reload manifest before each slide
+    change so Hide / Show reaches an
+    already-open Atrium display.
   */
+
+  const currentFileName =
+
+    currentIndex >= 0 &&
+    currentIndex < activeSlides.length
+
+      ? activeSlides[
+          currentIndex
+        ]
+
+      : null;
+
 
   await loadConfig();
 
 
+  /*
+    Try to retain our place after the
+    manifest reload.
+  */
+
+  if (
+    currentFileName
+  ) {
+
+    const foundIndex =
+      activeSlides.indexOf(
+        currentFileName
+      );
+
+
+    currentIndex =
+      foundIndex >= 0
+        ? foundIndex
+        : -1;
+
+  }
+
+
   const next =
-    await findSlide(
+    await findNextSlide(
       direction
     );
 
 
   if (
-    next === null
+    !next
   ) {
 
     isTransitioning =
@@ -586,8 +608,8 @@ async function advance(
         ];
 
 
-      current =
-        next;
+      currentIndex =
+        next.index;
 
 
       isTransitioning =
@@ -698,45 +720,57 @@ document.addEventListener(
 (async () => {
 
 
+  const loaded =
+    await loadConfig();
+
+
+  if (
+    !loaded ||
+    activeSlides.length === 0
+  ) {
+
+    console.warn(
+      "No active Atrium slides found."
+    );
+
+    return;
+
+  }
+
+
   /*
-    Load hidden list first.
-  */
-
-  await loadConfig();
-
-
-  /*
-    Find first real, non-hidden slide.
+    Find the first image that
+    successfully loads.
   */
 
   for (
-    let i =
-      FIRST_SLIDE;
-
-    i <=
-      LAST_SLIDE;
-
+    let i = 0;
+    i < activeSlides.length;
     i++
   ) {
 
 
-    if (
-      isHidden(i)
-    ) {
-
-      continue;
-
-    }
+    const fileName =
+      activeSlides[i];
 
 
-    if (
+    const success =
       await loadImage(
+
         imgA,
-        slideUrl(i)
-      )
+
+        slideUrl(
+          fileName
+        )
+
+      );
+
+
+    if (
+      success
     ) {
 
-      current =
+      currentIndex =
         i;
 
       break;
@@ -747,11 +781,11 @@ document.addEventListener(
 
 
   if (
-    current === null
+    currentIndex === -1
   ) {
 
     console.warn(
-      "No active slides found."
+      "No Atrium images could be loaded."
     );
 
     return;
@@ -765,7 +799,6 @@ document.addEventListener(
 })();
 
 </script>
-
 
 </body>
 
