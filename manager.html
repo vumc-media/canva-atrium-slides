@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -24,7 +23,6 @@ body {
   background: #111;
   color: #fff;
 }
-
 
 /* =====================================================
    HEADER
@@ -104,9 +102,8 @@ button:disabled {
   font-weight: 600;
 }
 
-
 /* =====================================================
-   GITHUB CONNECTION
+   CONNECTION
 ===================================================== */
 
 .connection-area {
@@ -128,6 +125,10 @@ button:disabled {
   font-weight: 700;
 }
 
+.token-row {
+  display: none;
+}
+
 input[type="password"] {
   flex: 1;
   padding: 11px 12px;
@@ -137,7 +138,6 @@ input[type="password"] {
   color: white;
   font-size: 14px;
 }
-
 
 /* =====================================================
    UPLOAD
@@ -238,7 +238,6 @@ input[type="password"] {
   color: #aaa;
 }
 
-
 /* =====================================================
    LIVE STATUS
 ===================================================== */
@@ -299,7 +298,6 @@ input[type="password"] {
 
 }
 
-
 /* =====================================================
    FILTERS
 ===================================================== */
@@ -323,7 +321,6 @@ input[type="password"] {
   border-color: #fff;
 }
 
-
 /* =====================================================
    STATUS
 ===================================================== */
@@ -333,9 +330,8 @@ input[type="password"] {
   color: #bbb;
 }
 
-
 /* =====================================================
-   SLIDES
+   SLIDE GRID
 ===================================================== */
 
 #grid {
@@ -459,7 +455,6 @@ input[type="password"] {
   font-size: 13px;
 }
 
-
 /* =====================================================
    MOBILE
 ===================================================== */
@@ -494,7 +489,6 @@ input[type="password"] {
 }
 
 </style>
-
 </head>
 
 
@@ -503,12 +497,10 @@ input[type="password"] {
 
 <header>
 
-  <h1>
-    VUMC Atrium Slide Manager
-  </h1>
+  <h1>VUMC Atrium Slide Manager</h1>
 
   <p>
-    Upload, hide, show, and remove Atrium announcements.
+    Upload, hide, show, replace, and remove Atrium announcements.
   </p>
 
 
@@ -549,8 +541,9 @@ input[type="password"] {
 </header>
 
 
-
-<!-- GITHUB CONNECTION -->
+<!-- =====================================================
+     CONNECTION
+===================================================== -->
 
 <div class="connection-area">
 
@@ -560,14 +553,8 @@ input[type="password"] {
     style="display:none;">
 
     <span class="connected-status">
-      ✓ GitHub Connected
+      ✓ Atrium Manager Connected
     </span>
-
-    <button
-      class="primary"
-      onclick="showTokenBox()">
-      Change Token
-    </button>
 
   </div>
 
@@ -584,7 +571,7 @@ input[type="password"] {
     <button
       class="primary"
       onclick="saveToken()">
-      Save Token
+      Connect
     </button>
 
   </div>
@@ -592,14 +579,13 @@ input[type="password"] {
 </div>
 
 
-
-<!-- UPLOAD -->
+<!-- =====================================================
+     UPLOAD
+===================================================== -->
 
 <section class="upload-section">
 
-  <h2>
-    Add / Replace Slides
-  </h2>
+  <h2>Add / Replace Slides</h2>
 
   <div
     id="dropZone"
@@ -611,7 +597,8 @@ input[type="password"] {
     </strong>
 
     <span>
-      Filenames no longer have to be sequential.
+      Matching filenames are replaced automatically.
+      Filenames do not have to be sequential.
     </span>
 
   </div>
@@ -671,8 +658,9 @@ input[type="password"] {
 </section>
 
 
-
-<!-- FILTERS -->
+<!-- =====================================================
+     FILTERS
+===================================================== -->
 
 <div class="filter-area">
 
@@ -762,7 +750,6 @@ let currentFilter =
   "all";
 
 
-
 /* =====================================================
    TOKEN
 ===================================================== */
@@ -788,7 +775,7 @@ function saveToken() {
   if (!token) {
 
     alert(
-      "Enter your GitHub token first."
+      "Enter the GitHub authorization token."
     );
 
     return;
@@ -810,24 +797,7 @@ function saveToken() {
 
   updateConnectionUI();
 
-
   loadEverything();
-
-}
-
-
-function showTokenBox() {
-
-  document.getElementById(
-    "connectedRow"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "tokenRow"
-  ).style.display =
-    "flex";
 
 }
 
@@ -838,20 +808,37 @@ function updateConnectionUI() {
     getToken();
 
 
-  document.getElementById(
-    "connectedRow"
-  ).style.display =
-    token
-      ? "flex"
-      : "none";
+  const connectedRow =
+    document.getElementById(
+      "connectedRow"
+    );
 
 
-  document.getElementById(
-    "tokenRow"
-  ).style.display =
-    token
-      ? "none"
-      : "flex";
+  const tokenRow =
+    document.getElementById(
+      "tokenRow"
+    );
+
+
+  if (token) {
+
+    connectedRow.style.display =
+      "flex";
+
+    tokenRow.style.display =
+      "none";
+
+  }
+
+  else {
+
+    connectedRow.style.display =
+      "none";
+
+    tokenRow.style.display =
+      "flex";
+
+  }
 
 }
 
@@ -867,11 +854,10 @@ function authorizationFailed() {
 
 
   alert(
-    "GitHub authorization has expired or is no longer valid. Enter a new token to reconnect."
+    "Atrium Manager authorization has expired. Please contact the Worship & Media office."
   );
 
 }
-
 
 
 /* =====================================================
@@ -913,7 +899,6 @@ function setLiveStatus(
     message;
 
 }
-
 
 
 /* =====================================================
@@ -1008,7 +993,6 @@ function decodeBase64Utf8(base64) {
 }
 
 
-
 /* =====================================================
    LOAD EVERYTHING
 ===================================================== */
@@ -1030,15 +1014,6 @@ async function loadEverything() {
   await loadSlides();
 
 
-  /*
-    The GitHub slides folder is the
-    source of truth for what exists.
-
-    Rebuild the manifest from the real
-    files so unusual filenames are
-    included automatically.
-  */
-
   const actualNames =
     files
       .map(
@@ -1049,11 +1024,6 @@ async function loadEverything() {
         naturalNameSort
       );
 
-
-  /*
-    Remove hidden names for files that
-    no longer exist.
-  */
 
   const actualNameSet =
     new Set(
@@ -1091,15 +1061,6 @@ async function loadEverything() {
   renderSlides();
 
 
-  /*
-    Automatically upgrade the old
-    hidden-only config to the new
-    manifest config.
-
-    This also repairs the manifest if
-    the GitHub folder changed.
-  */
-
   const manifestChanged =
 
     !configHadSlideList ||
@@ -1123,9 +1084,7 @@ async function loadEverything() {
       );
 
 
-    if (
-      saved
-    ) {
+    if (saved) {
 
       setLiveStatus(
         "waiting",
@@ -1140,7 +1099,6 @@ async function loadEverything() {
   }
 
 }
-
 
 
 /* =====================================================
@@ -1265,9 +1223,8 @@ async function loadConfig() {
 }
 
 
-
 /* =====================================================
-   SAVE CONFIG / MANIFEST
+   SAVE CONFIG
 ===================================================== */
 
 async function saveConfig(
@@ -1280,13 +1237,11 @@ async function saveConfig(
 
   if (!token) {
 
-    showTokenBox();
-
-
     alert(
-      "Enter your GitHub token first."
+      "Atrium Manager is not authorized. Please contact the Worship & Media office."
     );
 
+    updateConnectionUI();
 
     return false;
 
@@ -1404,7 +1359,7 @@ async function saveConfig(
 
 
       alert(
-        "GitHub could not update the Atrium slide list."
+        "Atrium Manager could not update the slide configuration."
       );
 
 
@@ -1444,7 +1399,7 @@ async function saveConfig(
 
 
     alert(
-      "Unable to update the Atrium slide list."
+      "Unable to update the Atrium slide configuration."
     );
 
 
@@ -1455,9 +1410,8 @@ async function saveConfig(
 }
 
 
-
 /* =====================================================
-   LOAD SLIDES DIRECTORY
+   LOAD SLIDES
 ===================================================== */
 
 async function loadSlides() {
@@ -1523,7 +1477,7 @@ async function loadSlides() {
 
 
     setStatus(
-      "Unable to load the slides folder."
+      "Unable to load the Atrium slides."
     );
 
   }
@@ -1531,9 +1485,8 @@ async function loadSlides() {
 }
 
 
-
 /* =====================================================
-   FILTERS
+   FILTER
 ===================================================== */
 
 function setFilter(
@@ -1614,7 +1567,6 @@ function getVisibleFiles() {
 }
 
 
-
 /* =====================================================
    RENDER SLIDES
 ===================================================== */
@@ -1686,7 +1638,6 @@ function renderSlides() {
         file.path;
 
 
-
       const imageWrap =
         document.createElement(
           "div"
@@ -1744,7 +1695,6 @@ function renderSlides() {
       imageWrap.appendChild(
         overlay
       );
-
 
 
       const info =
@@ -1828,7 +1778,6 @@ function renderSlides() {
       info.appendChild(
         badge
       );
-
 
 
       const actions =
@@ -1917,7 +1866,6 @@ function renderSlides() {
 }
 
 
-
 /* =====================================================
    SELECTION
 ===================================================== */
@@ -1972,7 +1920,6 @@ function clearSelection() {
 
   selected.clear();
 
-
   updateSelection();
 
 }
@@ -2021,7 +1968,6 @@ function updateSelection() {
     );
 
 }
-
 
 
 /* =====================================================
@@ -2074,7 +2020,6 @@ async function hideSlide(
 
     renderSlides();
 
-
     return;
 
   }
@@ -2083,7 +2028,6 @@ async function hideSlide(
   await waitForConfigDeployment();
 
 }
-
 
 
 /* =====================================================
@@ -2136,7 +2080,6 @@ async function showSlide(
 
     renderSlides();
 
-
     return;
 
   }
@@ -2145,7 +2088,6 @@ async function showSlide(
   await waitForConfigDeployment();
 
 }
-
 
 
 /* =====================================================
@@ -2162,13 +2104,9 @@ async function deleteSelected() {
     !token
   ) {
 
-    showTokenBox();
-
-
     alert(
-      "Enter your GitHub token first."
+      "Atrium Manager is not authorized. Please contact the Worship & Media office."
     );
-
 
     return;
 
@@ -2400,7 +2338,6 @@ async function deleteSelected() {
 }
 
 
-
 /* =====================================================
    DRAG / DROP
 ===================================================== */
@@ -2513,7 +2450,6 @@ filePicker.addEventListener(
 );
 
 
-
 /* =====================================================
    UPLOAD QUEUE
 ===================================================== */
@@ -2604,9 +2540,8 @@ function addUploadFiles(
 }
 
 
-
 /* =====================================================
-   PREVIEW
+   UPLOAD PREVIEW
 ===================================================== */
 
 function renderUploadPreview() {
@@ -2716,9 +2651,8 @@ function renderUploadPreview() {
 }
 
 
-
 /* =====================================================
-   CLEAR QUEUE
+   CLEAR UPLOAD QUEUE
 ===================================================== */
 
 function clearUploadQueue() {
@@ -2730,7 +2664,6 @@ function clearUploadQueue() {
   renderUploadPreview();
 
 }
-
 
 
 /* =====================================================
@@ -2779,7 +2712,6 @@ function fileToBase64(
 }
 
 
-
 /* =====================================================
    SHA256
 ===================================================== */
@@ -2818,7 +2750,6 @@ async function sha256Blob(
 }
 
 
-
 /* =====================================================
    FIND EXISTING FILE
 ===================================================== */
@@ -2838,7 +2769,6 @@ function findExistingFile(
 }
 
 
-
 /* =====================================================
    UPLOAD
 ===================================================== */
@@ -2853,13 +2783,9 @@ async function uploadFiles() {
     !token
   ) {
 
-    showTokenBox();
-
-
     alert(
-      "Enter your GitHub token first."
+      "Atrium Manager is not authorized. Please contact the Worship & Media office."
     );
-
 
     return;
 
@@ -3068,12 +2994,6 @@ async function uploadFiles() {
   renderUploadPreview();
 
 
-  /*
-    Reload the folder after uploading,
-    then create the manifest from every
-    real image that now exists.
-  */
-
   await loadSlides();
 
 
@@ -3157,7 +3077,6 @@ async function uploadFiles() {
   );
 
 }
-
 
 
 /* =====================================================
@@ -3248,14 +3167,7 @@ async function waitForAtriumFile(
           localHash
         ) {
 
-          /*
-            The image is live. Also make
-            sure the manifest itself has
-            arrived.
-          */
-
           await waitForConfigDeployment();
-
 
           return;
 
@@ -3296,9 +3208,8 @@ async function waitForAtriumFile(
 }
 
 
-
 /* =====================================================
-   VERIFY MANIFEST ON NETLIFY
+   VERIFY CONFIG ON NETLIFY
 ===================================================== */
 
 async function waitForConfigDeployment() {
@@ -3450,7 +3361,6 @@ async function waitForConfigDeployment() {
   return false;
 
 }
-
 
 
 /* =====================================================
