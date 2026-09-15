@@ -24,6 +24,7 @@ body {
   color: #fff;
 }
 
+
 /* =====================================================
    HEADER
 ===================================================== */
@@ -99,6 +100,16 @@ button:disabled {
   color: #fff;
 }
 
+.save-order-button {
+  background: #1976d2;
+  color: #fff;
+}
+
+.cancel-order-button {
+  background: #555;
+  color: #fff;
+}
+
 .selected-count {
   margin-left: auto;
   padding: 11px 14px;
@@ -106,6 +117,7 @@ button:disabled {
   border-radius: 8px;
   font-weight: 600;
 }
+
 
 /* =====================================================
    CONNECTION
@@ -143,6 +155,57 @@ input[type="password"] {
   color: white;
   font-size: 14px;
 }
+
+
+/* =====================================================
+   ORDER CONTROLS
+===================================================== */
+
+.order-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+
+  padding: 16px 24px;
+
+  background: #151f2b;
+  border-bottom: 1px solid #2b4259;
+}
+
+.order-panel-text {
+  margin-right: auto;
+}
+
+.order-panel-text strong {
+  display: block;
+  font-size: 16px;
+}
+
+.order-panel-text span {
+  color: #9db0c1;
+  font-size: 13px;
+}
+
+.unsaved-badge {
+  display: none;
+
+  padding: 7px 10px;
+
+  background: #5d4608;
+  color: #ffd866;
+
+  border: 1px solid #947312;
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.unsaved-badge.visible {
+  display: inline-block;
+}
+
 
 /* =====================================================
    UPLOAD
@@ -243,6 +306,7 @@ input[type="password"] {
   color: #aaa;
 }
 
+
 /* =====================================================
    LIVE STATUS
 ===================================================== */
@@ -260,6 +324,12 @@ input[type="password"] {
 .live-status.waiting {
   display: flex;
   background: #332d16;
+  color: #ffd866;
+}
+
+.live-status.draft {
+  display: flex;
+  background: #382c09;
   color: #ffd866;
 }
 
@@ -293,8 +363,9 @@ input[type="password"] {
   100% { opacity: .35; }
 }
 
+
 /* =====================================================
-   FILTERS / ORDER
+   FILTERS
 ===================================================== */
 
 .filter-area {
@@ -327,6 +398,7 @@ input[type="password"] {
   color: #7ee787;
 }
 
+
 /* =====================================================
    STATUS
 ===================================================== */
@@ -335,6 +407,7 @@ input[type="password"] {
   padding: 8px 24px 16px;
   color: #bbb;
 }
+
 
 /* =====================================================
    SLIDE GRID
@@ -354,6 +427,7 @@ input[type="password"] {
   border: 2px solid transparent;
   border-radius: 12px;
   overflow: hidden;
+
   transition:
     transform .15s ease,
     border-color .15s ease,
@@ -380,19 +454,29 @@ input[type="password"] {
 
 .card.drag-target {
   border-color: #7ee787;
-  box-shadow: 0 0 0 3px rgba(126, 231, 135, .18);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(126, 231, 135, .18);
 }
+
+
+/* DRAG HEADER */
 
 .drag-handle {
   display: flex;
   align-items: center;
   gap: 9px;
+
   padding: 9px 12px;
+
   background: #292929;
-  border-bottom: 1px solid #3b3b3b;
+
+  border-bottom:
+    1px solid #3b3b3b;
+
   cursor: grab;
   user-select: none;
-  touch-action: none;
 }
 
 .drag-handle:active {
@@ -409,12 +493,17 @@ input[type="password"] {
 .order-number {
   width: 28px;
   height: 28px;
+
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
+
   border-radius: 50%;
+
   background: #444;
   color: #fff;
+
   font-size: 12px;
   font-weight: 800;
 }
@@ -424,6 +513,9 @@ input[type="password"] {
   font-size: 12px;
 }
 
+
+/* IMAGE */
+
 .image-wrap {
   position: relative;
   background: #000;
@@ -431,9 +523,13 @@ input[type="password"] {
 
 .card img {
   display: block;
+
   width: 100%;
+
   aspect-ratio: 16 / 9;
+
   object-fit: contain;
+
   background: #000;
 }
 
@@ -443,32 +539,51 @@ input[type="password"] {
 
 .hidden-overlay {
   display: none;
+
   position: absolute;
+
   inset: 0;
+
   align-items: center;
   justify-content: center;
+
   pointer-events: none;
 }
 
-.card.hidden-slide .hidden-overlay {
+.card.hidden-slide
+.hidden-overlay {
   display: flex;
 }
 
 .hidden-overlay span {
-  background: rgba(0,0,0,.8);
-  border: 1px solid #d3ae3f;
+  background:
+    rgba(0,0,0,.8);
+
+  border:
+    1px solid #d3ae3f;
+
   color: #ffd866;
+
   border-radius: 8px;
+
   padding: 9px 15px;
+
   font-weight: 800;
+
   letter-spacing: 1px;
 }
+
+
+/* INFO */
 
 .info {
   display: flex;
   align-items: center;
+
   gap: 10px;
-  padding: 11px 12px 8px;
+
+  padding:
+    11px 12px 8px;
 }
 
 .info input {
@@ -479,18 +594,29 @@ input[type="password"] {
 
 .filename {
   font-size: 14px;
+
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+
   flex: 1;
 }
 
 .state-badge {
   font-size: 11px;
   font-weight: 800;
-  border-radius: 20px;
+
+  border-radius:
+    20px;
+
   padding: 5px 8px;
-  white-space: nowrap;
+
+  white-space:
+    nowrap;
 }
 
 .state-badge.active {
@@ -503,17 +629,26 @@ input[type="password"] {
   background: #332d16;
 }
 
+
+/* CARD ACTIONS */
+
 .card-actions {
   display: flex;
+
   gap: 8px;
-  padding: 4px 12px 12px;
+
+  padding:
+    4px 12px 12px;
 }
 
 .card-actions button {
   flex: 1;
+
   padding: 9px 8px;
+
   font-size: 13px;
 }
+
 
 /* =====================================================
    MOBILE
@@ -536,14 +671,28 @@ input[type="password"] {
     margin-left: 0;
   }
 
+  .order-panel {
+    align-items: stretch;
+  }
+
+  .order-panel-text {
+    width: 100%;
+  }
+
+  .order-panel button {
+    flex: 1;
+  }
+
   #grid {
     grid-template-columns: 1fr;
+
     padding-left: 12px;
     padding-right: 12px;
   }
 
   header,
   .connection-area,
+  .order-panel,
   .upload-section,
   .filter-area,
   #status {
@@ -556,228 +705,387 @@ input[type="password"] {
 </style>
 </head>
 
+
 <body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <header>
 
-  <h1>VUMC Atrium Slide Manager</h1>
+<h1>
+  VUMC Atrium Slide Manager
+</h1>
 
-  <p>
-    Upload, reorder, hide, show, replace, and remove Atrium announcements.
-  </p>
+<p>
+  Upload, reorder, hide, show, replace,
+  and remove Atrium announcements.
+</p>
 
-  <div class="toolbar">
 
-    <button
-      class="primary"
-      onclick="selectAllVisible()">
-      Select Visible
-    </button>
+<div class="toolbar">
 
-    <button
-      class="primary"
-      onclick="clearSelection()">
-      Clear Selection
-    </button>
+<button
+  class="primary"
+  onclick="selectAllVisible()">
+  Select Visible
+</button>
 
-    <button
-      id="deleteButton"
-      class="danger"
-      onclick="deleteSelected()"
-      disabled>
-      Delete Selected
-    </button>
 
-    <button
-      class="primary"
-      onclick="loadEverything()">
-      Refresh
-    </button>
+<button
+  class="primary"
+  onclick="clearSelection()">
+  Clear Selection
+</button>
 
-    <div class="selected-count">
-      <span id="count">0</span> selected
-    </div>
 
-  </div>
+<button
+  id="deleteButton"
+  class="danger"
+  onclick="deleteSelected()"
+  disabled>
+  Delete Selected
+</button>
+
+
+<button
+  class="primary"
+  onclick="loadEverything()">
+  Refresh
+</button>
+
+
+<div class="selected-count">
+
+<span id="count">
+  0
+</span>
+
+selected
+
+</div>
+
+</div>
 
 </header>
 
 
-<!-- CONNECTION -->
+<!-- =====================================================
+     CONNECTION
+===================================================== -->
 
 <div class="connection-area">
 
-  <div
-    id="connectedRow"
-    class="connected-row"
-    style="display:none;">
 
-    <span class="connected-status">
-      ✓ Atrium Manager Connected
-    </span>
+<div
+  id="connectedRow"
+  class="connected-row"
+  style="display:none;">
 
-  </div>
-
-  <div
-    id="tokenRow"
-    class="token-row">
-
-    <input
-      id="token"
-      type="password"
-      placeholder="GitHub Personal Access Token">
-
-    <button
-      class="primary"
-      onclick="saveToken()">
-      Connect
-    </button>
-
-  </div>
+<span class="connected-status">
+  ✓ Atrium Manager Connected
+</span>
 
 </div>
 
 
-<!-- UPLOAD -->
+<div
+  id="tokenRow"
+  class="token-row">
+
+<input
+  id="token"
+  type="password"
+  placeholder="GitHub Personal Access Token">
+
+
+<button
+  class="primary"
+  onclick="saveToken()">
+  Connect
+</button>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     ORDER CONTROL PANEL
+===================================================== -->
+
+<div class="order-panel">
+
+
+<div class="order-panel-text">
+
+<strong>
+  Slide Order
+</strong>
+
+<span>
+  Rearrange as much as you want,
+  then save once when you are finished.
+</span>
+
+</div>
+
+
+<span
+  id="unsavedBadge"
+  class="unsaved-badge">
+
+  UNSAVED CHANGES
+
+</span>
+
+
+<button
+  id="saveOrderButton"
+  class="save-order-button"
+  onclick="saveDraftOrder()"
+  disabled>
+
+  Save Slide Order
+
+</button>
+
+
+<button
+  id="cancelOrderButton"
+  class="cancel-order-button"
+  onclick="cancelDraftOrder()"
+  disabled>
+
+  Cancel Changes
+
+</button>
+
+
+</div>
+
+
+<!-- =====================================================
+     UPLOAD
+===================================================== -->
 
 <section class="upload-section">
 
-  <h2>Add / Replace Slides</h2>
 
-  <div
-    id="dropZone"
-    class="drop-zone"
-    onclick="document.getElementById('filePicker').click()">
+<h2>
+  Add / Replace Slides
+</h2>
 
-    <strong>
-      Drop Canva JPGs here
-    </strong>
 
-    <span>
-      New slides are added to the end.
-      Matching filenames are replaced without changing their position.
-    </span>
+<div
+  id="dropZone"
+  class="drop-zone"
+  onclick="document.getElementById('filePicker').click()">
 
-  </div>
+<strong>
+  Drop Canva JPGs here
+</strong>
 
-  <input
-    id="filePicker"
-    type="file"
-    accept=".jpg,.jpeg,.png,.webp"
-    multiple>
+<span>
+  New slides are added to the end.
+  Matching filenames are replaced without
+  changing their position.
+</span>
 
-  <div
-    id="uploadPreview"
-    class="upload-preview">
-  </div>
+</div>
 
-  <div
-    id="uploadActions"
-    class="upload-actions">
 
-    <button
-      id="uploadButton"
-      class="success"
-      onclick="uploadFiles()">
-      Upload to Atrium
-    </button>
+<input
+  id="filePicker"
+  type="file"
+  accept=".jpg,.jpeg,.png,.webp"
+  multiple>
 
-    <button
-      class="primary"
-      onclick="clearUploadQueue()">
-      Cancel
-    </button>
 
-  </div>
+<div
+  id="uploadPreview"
+  class="upload-preview">
+</div>
 
-  <div
-    id="uploadProgress"
-    class="upload-progress">
-  </div>
 
-  <div
-    id="liveStatus"
-    class="live-status">
+<div
+  id="uploadActions"
+  class="upload-actions">
 
-    <span class="status-dot"></span>
 
-    <span id="liveStatusText">
-      Checking Atrium...
-    </span>
+<button
+  id="uploadButton"
+  class="success"
+  onclick="uploadFiles()">
 
-  </div>
+  Upload to Atrium
+
+</button>
+
+
+<button
+  class="primary"
+  onclick="clearUploadQueue()">
+
+  Cancel
+
+</button>
+
+
+</div>
+
+
+<div
+  id="uploadProgress"
+  class="upload-progress">
+</div>
+
+
+<div
+  id="liveStatus"
+  class="live-status">
+
+<span class="status-dot"></span>
+
+<span id="liveStatusText">
+  Checking Atrium...
+</span>
+
+</div>
+
 
 </section>
 
 
-<!-- FILTERS -->
+<!-- =====================================================
+     FILTERS
+===================================================== -->
 
 <div class="filter-area">
 
-  <button
-    id="filterAll"
-    class="filter-button active"
-    onclick="setFilter('all')">
-    All
-  </button>
 
-  <button
-    id="filterActive"
-    class="filter-button"
-    onclick="setFilter('active')">
-    Active
-  </button>
+<button
+  id="filterAll"
+  class="filter-button active"
+  onclick="setFilter('all')">
 
-  <button
-    id="filterHidden"
-    class="filter-button"
-    onclick="setFilter('hidden')">
-    Hidden
-  </button>
+  All
 
-  <div
-    id="orderHelp"
-    class="order-help">
-    <strong>Reorder:</strong>
-    drag cards or use ↑ ↓
-  </div>
+</button>
+
+
+<button
+  id="filterActive"
+  class="filter-button"
+  onclick="setFilter('active')">
+
+  Active
+
+</button>
+
+
+<button
+  id="filterHidden"
+  class="filter-button"
+  onclick="setFilter('hidden')">
+
+  Hidden
+
+</button>
+
+
+<div
+  id="orderHelp"
+  class="order-help">
+
+<strong>
+  Reorder:
+</strong>
+
+drag cards or use ↑ ↓
 
 </div>
+
+
+</div>
+
 
 <div id="status">
   Loading slides...
 </div>
+
 
 <div id="grid"></div>
 
 
 <script>
 
+
 /* =====================================================
    CONFIGURATION
 ===================================================== */
 
-const OWNER = "vumc-media";
-const REPO = "canva-atrium-slides";
-const BRANCH = "main";
-const FOLDER = "slides";
-const CONFIG_PATH = "slides-config.json";
-const ATRIUM_URL = "https://canvaslides.netlify.app";
+const OWNER =
+  "vumc-media";
+
+const REPO =
+  "canva-atrium-slides";
+
+const BRANCH =
+  "main";
+
+const FOLDER =
+  "slides";
+
+const CONFIG_PATH =
+  "slides-config.json";
+
+const ATRIUM_URL =
+  "https://canvaslides.netlify.app";
+
 
 const API =
   `https://api.github.com/repos/${OWNER}/${REPO}`;
 
-let files = [];
-let selected = new Set();
-let uploadQueue = [];
-let hiddenSlides = new Set();
+
+/*
+  manifestSlides =
+  currently SAVED / LIVE order
+
+  draftSlides =
+  temporary order being edited
+*/
+
 let manifestSlides = [];
+
+let draftSlides = [];
+
+let files = [];
+
+let selected =
+  new Set();
+
+let uploadQueue = [];
+
+let hiddenSlides =
+  new Set();
+
 let configSha = null;
-let configHadSlideList = false;
-let currentFilter = "all";
+
+let configHadSlideList =
+  false;
+
+let currentFilter =
+  "all";
 
 let draggedName = null;
-let orderSaveBusy = false;
+
+let orderSaveBusy =
+  false;
+
 
 
 /* =====================================================
@@ -785,48 +1093,85 @@ let orderSaveBusy = false;
 ===================================================== */
 
 function getToken() {
-  return localStorage.getItem("atriumGithubToken");
+
+  return localStorage.getItem(
+    "atriumGithubToken"
+  );
 }
+
 
 function saveToken() {
 
   const token =
-    document.getElementById("token").value.trim();
+    document
+      .getElementById("token")
+      .value
+      .trim();
+
 
   if (!token) {
-    alert("Enter the GitHub authorization token.");
+
+    alert(
+      "Enter the GitHub authorization token."
+    );
+
     return;
   }
+
 
   localStorage.setItem(
     "atriumGithubToken",
     token
   );
 
-  document.getElementById("token").value = "";
+
+  document
+    .getElementById("token")
+    .value = "";
+
 
   updateConnectionUI();
+
   loadEverything();
 }
 
+
 function updateConnectionUI() {
 
-  const token = getToken();
+  const token =
+    getToken();
+
 
   const connectedRow =
-    document.getElementById("connectedRow");
+    document.getElementById(
+      "connectedRow"
+    );
+
 
   const tokenRow =
-    document.getElementById("tokenRow");
+    document.getElementById(
+      "tokenRow"
+    );
+
 
   if (token) {
-    connectedRow.style.display = "flex";
-    tokenRow.style.display = "none";
+
+    connectedRow.style.display =
+      "flex";
+
+    tokenRow.style.display =
+      "none";
+
   } else {
-    connectedRow.style.display = "none";
-    tokenRow.style.display = "flex";
+
+    connectedRow.style.display =
+      "none";
+
+    tokenRow.style.display =
+      "flex";
   }
 }
+
 
 function authorizationFailed() {
 
@@ -834,7 +1179,9 @@ function authorizationFailed() {
     "atriumGithubToken"
   );
 
+
   updateConnectionUI();
+
 
   alert(
     "Atrium Manager authorization has expired. Please contact the Worship & Media office."
@@ -842,27 +1189,44 @@ function authorizationFailed() {
 }
 
 
+
 /* =====================================================
    STATUS
 ===================================================== */
 
 function setStatus(message) {
-  document.getElementById("status").textContent = message;
+
+  document
+    .getElementById("status")
+    .textContent = message;
 }
 
-function setLiveStatus(type, message) {
+
+function setLiveStatus(
+  type,
+  message
+) {
 
   const box =
-    document.getElementById("liveStatus");
+    document.getElementById(
+      "liveStatus"
+    );
+
 
   const text =
-    document.getElementById("liveStatusText");
+    document.getElementById(
+      "liveStatusText"
+    );
+
 
   box.className =
     `live-status ${type}`;
 
-  text.textContent = message;
+
+  text.textContent =
+    message;
 }
+
 
 
 /* =====================================================
@@ -870,12 +1234,18 @@ function setLiveStatus(type, message) {
 ===================================================== */
 
 function sleep(ms) {
+
   return new Promise(
-    resolve => setTimeout(resolve, ms)
+    resolve =>
+      setTimeout(resolve, ms)
   );
 }
 
-function naturalNameSort(a, b) {
+
+function naturalNameSort(
+  a,
+  b
+) {
 
   return a.localeCompare(
     b,
@@ -887,49 +1257,177 @@ function naturalNameSort(a, b) {
   );
 }
 
-function encodeBase64Utf8(text) {
+
+function encodeBase64Utf8(
+  text
+) {
 
   const bytes =
-    new TextEncoder().encode(text);
+    new TextEncoder()
+      .encode(text);
+
 
   let binary = "";
 
-  bytes.forEach(byte => {
-    binary += String.fromCharCode(byte);
-  });
+
+  bytes.forEach(
+    byte => {
+
+      binary +=
+        String.fromCharCode(
+          byte
+        );
+    }
+  );
+
 
   return btoa(binary);
 }
 
-function decodeBase64Utf8(base64) {
+
+function decodeBase64Utf8(
+  base64
+) {
 
   const binary =
-    atob(base64.replace(/\n/g, ""));
+    atob(
+      base64.replace(
+        /\n/g,
+        ""
+      )
+    );
+
 
   const bytes =
     Uint8Array.from(
       binary,
-      char => char.charCodeAt(0)
+      char =>
+        char.charCodeAt(0)
     );
 
-  return new TextDecoder().decode(bytes);
+
+  return new TextDecoder()
+    .decode(bytes);
 }
 
-function getFileByName(name) {
-  return files.find(file => file.name === name);
+
+function hasUnsavedOrderChanges() {
+
+  return (
+    JSON.stringify(
+      draftSlides
+    )
+    !==
+    JSON.stringify(
+      manifestSlides
+    )
+  );
 }
+
 
 function orderedFiles() {
 
   const fileMap =
     new Map(
-      files.map(file => [file.name, file])
+      files.map(
+        file =>
+          [file.name, file]
+      )
     );
 
-  return manifestSlides
-    .map(name => fileMap.get(name))
+
+  return draftSlides
+    .map(
+      name =>
+        fileMap.get(name)
+    )
     .filter(Boolean);
 }
+
+
+
+/* =====================================================
+   DRAFT ORDER STATE
+===================================================== */
+
+function updateOrderControls() {
+
+  const changed =
+    hasUnsavedOrderChanges();
+
+
+  document
+    .getElementById(
+      "saveOrderButton"
+    )
+    .disabled =
+      !changed ||
+      orderSaveBusy;
+
+
+  document
+    .getElementById(
+      "cancelOrderButton"
+    )
+    .disabled =
+      !changed ||
+      orderSaveBusy;
+
+
+  document
+    .getElementById(
+      "unsavedBadge"
+    )
+    .classList.toggle(
+      "visible",
+      changed
+    );
+
+
+  if (
+    changed &&
+    !orderSaveBusy
+  ) {
+
+    setLiveStatus(
+      "draft",
+      "Slide order changed — click Save Slide Order when finished."
+    );
+  }
+}
+
+
+function markOrderDirty() {
+
+  updateOrderControls();
+}
+
+
+function cancelDraftOrder() {
+
+  if (
+    !hasUnsavedOrderChanges()
+  ) {
+    return;
+  }
+
+
+  draftSlides =
+    [...manifestSlides];
+
+
+  renderSlides();
+
+
+  updateOrderControls();
+
+
+  setLiveStatus(
+    "live",
+    "Slide order restored to the current Atrium order."
+  );
+}
+
 
 
 /* =====================================================
@@ -938,59 +1436,135 @@ function orderedFiles() {
 
 async function loadEverything() {
 
-  setStatus("Loading slides...");
+  if (
+    hasUnsavedOrderChanges()
+  ) {
+
+    const discard =
+      confirm(
+        "You have unsaved slide-order changes.\n\nRefresh and discard those changes?"
+      );
+
+
+    if (!discard) {
+      return;
+    }
+  }
+
+
+  setStatus(
+    "Loading slides..."
+  );
+
 
   selected.clear();
+
   updateSelection();
 
+
   await loadConfig();
+
   await loadSlides();
 
+
   const actualNames =
-    files.map(file => file.name);
+    files.map(
+      file =>
+        file.name
+    );
+
 
   const actualNameSet =
-    new Set(actualNames);
+    new Set(
+      actualNames
+    );
+
 
   hiddenSlides =
     new Set(
-      Array.from(hiddenSlides)
-        .filter(name => actualNameSet.has(name))
+      Array.from(
+        hiddenSlides
+      )
+      .filter(
+        name =>
+          actualNameSet.has(
+            name
+          )
+      )
     );
 
-  /*
-    Preserve existing manifest order.
 
-    Any files physically present in /slides but not yet
-    represented in the manifest are appended to the end.
+  /*
+    Keep the saved order.
+
+    Any unexpected files found
+    physically in /slides are
+    appended to the end.
   */
 
   const preservedOrder =
     manifestSlides.filter(
-      name => actualNameSet.has(name)
+      name =>
+        actualNameSet.has(
+          name
+        )
     );
 
+
   const manifestSet =
-    new Set(preservedOrder);
+    new Set(
+      preservedOrder
+    );
+
 
   const newFiles =
     actualNames
-      .filter(name => !manifestSet.has(name))
-      .sort(naturalNameSort);
+      .filter(
+        name =>
+          !manifestSet.has(
+            name
+          )
+      )
+      .sort(
+        naturalNameSort
+      );
+
 
   const rebuiltManifest = [
     ...preservedOrder,
     ...newFiles
   ];
 
-  const manifestChanged =
-    !configHadSlideList ||
-    JSON.stringify(manifestSlides) !==
-    JSON.stringify(rebuiltManifest);
 
-  manifestSlides = rebuiltManifest;
+  const manifestChanged =
+    !configHadSlideList
+    ||
+    JSON.stringify(
+      manifestSlides
+    )
+    !==
+    JSON.stringify(
+      rebuiltManifest
+    );
+
+
+  manifestSlides =
+    rebuiltManifest;
+
+
+  /*
+    Draft always begins as
+    the saved/live order.
+  */
+
+  draftSlides =
+    [...manifestSlides];
+
 
   renderSlides();
+
+  updateOrderControls();
+
 
   if (
     manifestChanged &&
@@ -1002,6 +1576,7 @@ async function loadEverything() {
         "Sync Atrium slide manifest"
       );
 
+
     if (saved) {
 
       setLiveStatus(
@@ -1009,10 +1584,12 @@ async function loadEverything() {
         "Slide list updated — Atrium updating..."
       );
 
+
       await waitForConfigDeployment();
     }
   }
 }
+
 
 
 /* =====================================================
@@ -1021,10 +1598,18 @@ async function loadEverything() {
 
 async function loadConfig() {
 
-  hiddenSlides = new Set();
+  hiddenSlides =
+    new Set();
+
   manifestSlides = [];
+
+  draftSlides = [];
+
   configSha = null;
-  configHadSlideList = false;
+
+  configHadSlideList =
+    false;
+
 
   try {
 
@@ -1033,6 +1618,7 @@ async function loadConfig() {
         `${API}/contents/${CONFIG_PATH}?ref=${BRANCH}&v=${Date.now()}`,
         {
           cache: "no-store",
+
           headers: {
             "Accept":
               "application/vnd.github+json"
@@ -1040,45 +1626,76 @@ async function loadConfig() {
         }
       );
 
-    if (response.status === 404) {
+
+    if (
+      response.status === 404
+    ) {
       return;
     }
 
+
     if (!response.ok) {
+
       throw new Error(
         `Config returned ${response.status}`
       );
     }
 
+
     const data =
       await response.json();
 
-    configSha = data.sha;
+
+    configSha =
+      data.sha;
+
 
     const text =
-      decodeBase64Utf8(data.content);
+      decodeBase64Utf8(
+        data.content
+      );
+
 
     const config =
       JSON.parse(text);
 
-    if (Array.isArray(config.hidden)) {
+
+    if (
+      Array.isArray(
+        config.hidden
+      )
+    ) {
+
       hiddenSlides =
-        new Set(config.hidden);
+        new Set(
+          config.hidden
+        );
     }
 
-    if (Array.isArray(config.slides)) {
+
+    if (
+      Array.isArray(
+        config.slides
+      )
+    ) {
 
       /*
-        IMPORTANT:
-        Do NOT sort this array.
+        DO NOT SORT.
 
-        Its order IS the Atrium playback order.
+        This order is the
+        live playback order.
       */
 
       manifestSlides =
         [...config.slides];
 
-      configHadSlideList = true;
+
+      draftSlides =
+        [...config.slides];
+
+
+      configHadSlideList =
+        true;
     }
 
   } catch (error) {
@@ -1091,13 +1708,18 @@ async function loadConfig() {
 }
 
 
+
 /* =====================================================
    SAVE CONFIG
 ===================================================== */
 
-async function saveConfig(commitMessage) {
+async function saveConfig(
+  commitMessage
+) {
 
-  const token = getToken();
+  const token =
+    getToken();
+
 
   if (!token) {
 
@@ -1105,28 +1727,40 @@ async function saveConfig(commitMessage) {
       "Atrium Manager is not authorized. Please contact the Worship & Media office."
     );
 
+
     updateConnectionUI();
+
     return false;
   }
+
 
   const config = {
 
     /*
-      DO NOT SORT manifestSlides.
-      Array position controls playback order.
+      manifestSlides is the
+      SAVED / LIVE order.
     */
 
-    slides: [...manifestSlides],
+    slides:
+      [...manifestSlides],
+
 
     hidden:
-      Array.from(hiddenSlides)
-        .sort(naturalNameSort)
+      Array.from(
+        hiddenSlides
+      )
+      .sort(
+        naturalNameSort
+      )
 
   };
 
+
   const payload = {
 
-    message: commitMessage,
+    message:
+      commitMessage,
+
 
     content:
       encodeBase64Utf8(
@@ -1134,15 +1768,22 @@ async function saveConfig(commitMessage) {
           config,
           null,
           2
-        ) + "\n"
+        )
+        + "\n"
       ),
 
-    branch: BRANCH
+
+    branch:
+      BRANCH
   };
 
+
   if (configSha) {
-    payload.sha = configSha;
+
+    payload.sha =
+      configSha;
   }
+
 
   try {
 
@@ -1168,34 +1809,36 @@ async function saveConfig(commitMessage) {
           },
 
           body:
-            JSON.stringify(payload)
+            JSON.stringify(
+              payload
+            )
         }
       );
 
+
     if (
-      response.status === 401 ||
+      response.status === 401
+      ||
       response.status === 403
     ) {
 
       authorizationFailed();
+
       return false;
     }
 
-    if (response.status === 409) {
 
-      /*
-        Config changed between reads.
-        Reload and let the user try again rather than
-        accidentally overwriting newer state.
-      */
+    if (
+      response.status === 409
+    ) {
 
       alert(
-        "The slide list changed while this page was open. Refreshing the manager now."
+        "The Atrium configuration changed while this page was open. Refresh the manager before trying again."
       );
 
-      await loadEverything();
       return false;
     }
+
 
     if (!response.ok) {
 
@@ -1203,25 +1846,34 @@ async function saveConfig(commitMessage) {
         await response.text()
       );
 
+
       alert(
         "Atrium Manager could not update the slide configuration."
       );
 
+
       return false;
     }
+
 
     const result =
       await response.json();
 
+
     if (
-      result.content &&
+      result.content
+      &&
       result.content.sha
     ) {
+
       configSha =
         result.content.sha;
     }
 
-    configHadSlideList = true;
+
+    configHadSlideList =
+      true;
+
 
     return true;
 
@@ -1229,13 +1881,133 @@ async function saveConfig(commitMessage) {
 
     console.error(error);
 
+
     alert(
       "Unable to update the Atrium slide configuration."
     );
 
+
     return false;
   }
 }
+
+
+
+/* =====================================================
+   SAVE DRAFT ORDER
+===================================================== */
+
+async function saveDraftOrder() {
+
+  if (
+    orderSaveBusy
+    ||
+    !hasUnsavedOrderChanges()
+  ) {
+    return;
+  }
+
+
+  const previousOrder =
+    [...manifestSlides];
+
+
+  orderSaveBusy = true;
+
+  updateOrderControls();
+
+  renderSlides();
+
+
+  /*
+    Copy temporary order into
+    the saved/live manifest.
+  */
+
+  manifestSlides =
+    [...draftSlides];
+
+
+  setLiveStatus(
+    "waiting",
+    "Saving slide order..."
+  );
+
+
+  const saved =
+    await saveConfig(
+      "Reorder Atrium slides"
+    );
+
+
+  if (!saved) {
+
+    manifestSlides =
+      previousOrder;
+
+
+    draftSlides =
+      [...previousOrder];
+
+
+    orderSaveBusy =
+      false;
+
+
+    renderSlides();
+
+    updateOrderControls();
+
+
+    setLiveStatus(
+      "error",
+      "The new order could not be saved."
+    );
+
+
+    return;
+  }
+
+
+  setLiveStatus(
+    "waiting",
+    "New slide order saved — Atrium updating..."
+  );
+
+
+  const deployed =
+    await waitForConfigDeployment(
+      "✓ Atrium is live with the new slide order"
+    );
+
+
+  orderSaveBusy =
+    false;
+
+
+  /*
+    The draft now exactly
+    matches saved order.
+  */
+
+  draftSlides =
+    [...manifestSlides];
+
+
+  renderSlides();
+
+  updateOrderControls();
+
+
+  if (!deployed) {
+
+    setLiveStatus(
+      "error",
+      "The order was saved to GitHub, but the live Atrium deployment has not been confirmed yet."
+    );
+  }
+}
+
 
 
 /* =====================================================
@@ -1250,34 +2022,45 @@ async function loadSlides() {
       await fetch(
         `${API}/contents/${FOLDER}?ref=${BRANCH}&v=${Date.now()}`,
         {
-          cache: "no-store",
+          cache:
+            "no-store",
+
           headers: {
+
             "Accept":
               "application/vnd.github+json"
           }
         }
       );
 
+
     if (!response.ok) {
+
       throw new Error(
         `GitHub returned ${response.status}`
       );
     }
 
+
     const data =
       await response.json();
+
 
     files =
       data.filter(
         file =>
-          file.type === "file" &&
+          file.type === "file"
+          &&
           /\.(jpg|jpeg|png|webp)$/i
-            .test(file.name)
+            .test(
+              file.name
+            )
       );
 
   } catch (error) {
 
     console.error(error);
+
 
     setStatus(
       "Unable to load the Atrium slides."
@@ -1286,57 +2069,89 @@ async function loadSlides() {
 }
 
 
+
 /* =====================================================
    FILTER
 ===================================================== */
 
-function setFilter(filter) {
+function setFilter(
+  filter
+) {
 
-  currentFilter = filter;
+  currentFilter =
+    filter;
+
 
   document
-    .querySelectorAll(".filter-button")
-    .forEach(button =>
-      button.classList.remove("active")
+    .querySelectorAll(
+      ".filter-button"
+    )
+    .forEach(
+      button =>
+        button.classList.remove(
+          "active"
+        )
     );
+
 
   const id =
     filter === "all"
       ? "filterAll"
-      : filter === "active"
+      :
+      filter === "active"
         ? "filterActive"
-        : "filterHidden";
+        :
+        "filterHidden";
+
 
   document
     .getElementById(id)
-    .classList.add("active");
+    .classList.add(
+      "active"
+    );
+
 
   renderSlides();
 }
+
 
 function getVisibleFiles() {
 
   const ordered =
     orderedFiles();
 
-  if (currentFilter === "active") {
+
+  if (
+    currentFilter ===
+    "active"
+  ) {
 
     return ordered.filter(
       file =>
-        !hiddenSlides.has(file.name)
+        !hiddenSlides.has(
+          file.name
+        )
     );
   }
 
-  if (currentFilter === "hidden") {
+
+  if (
+    currentFilter ===
+    "hidden"
+  ) {
 
     return ordered.filter(
       file =>
-        hiddenSlides.has(file.name)
+        hiddenSlides.has(
+          file.name
+        )
     );
   }
+
 
   return ordered;
 }
+
 
 
 /* =====================================================
@@ -1346,411 +2161,638 @@ function getVisibleFiles() {
 function renderSlides() {
 
   const grid =
-    document.getElementById("grid");
+    document.getElementById(
+      "grid"
+    );
+
 
   grid.innerHTML = "";
+
 
   const visibleFiles =
     getVisibleFiles();
 
+
   const activeCount =
     files.filter(
       file =>
-        !hiddenSlides.has(file.name)
+        !hiddenSlides.has(
+          file.name
+        )
     ).length;
+
 
   const hiddenCount =
     files.filter(
       file =>
-        hiddenSlides.has(file.name)
+        hiddenSlides.has(
+          file.name
+        )
     ).length;
+
 
   setStatus(
     `${files.length} slides — ${activeCount} active, ${hiddenCount} hidden.`
   );
 
-  document.getElementById(
-    "orderHelp"
-  ).innerHTML =
-    currentFilter === "all"
-      ? "<strong>Reorder:</strong> drag cards or use ↑ ↓"
-      : "Switch to <strong>All</strong> to reorder slides.";
 
-  visibleFiles.forEach(file => {
+  document
+    .getElementById(
+      "orderHelp"
+    )
+    .innerHTML =
+      currentFilter ===
+      "all"
 
-    const isHidden =
-      hiddenSlides.has(file.name);
+        ? "<strong>Reorder:</strong> drag cards or use ↑ ↓"
 
-    const manifestIndex =
-      manifestSlides.indexOf(file.name);
+        : "Switch to <strong>All</strong> to reorder slides.";
 
-    const card =
-      document.createElement("div");
 
-    card.className =
-      isHidden
-        ? "card hidden-slide"
-        : "card";
+  visibleFiles.forEach(
+    file => {
 
-    card.dataset.path = file.path;
-    card.dataset.name = file.name;
 
-    /*
-      Native drag/drop is enabled only in All view.
-    */
+      const isHidden =
+        hiddenSlides.has(
+          file.name
+        );
 
-    if (currentFilter === "all") {
 
-      card.draggable = true;
+      const draftIndex =
+        draftSlides.indexOf(
+          file.name
+        );
 
-      card.addEventListener(
-        "dragstart",
-        handleDragStart
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        isHidden
+          ? "card hidden-slide"
+          : "card";
+
+
+      card.dataset.path =
+        file.path;
+
+
+      card.dataset.name =
+        file.name;
+
+
+      /*
+        Drag/drop only in All.
+      */
+
+      if (
+        currentFilter === "all"
+        &&
+        !orderSaveBusy
+      ) {
+
+        card.draggable =
+          true;
+
+
+        card.addEventListener(
+          "dragstart",
+          handleDragStart
+        );
+
+
+        card.addEventListener(
+          "dragover",
+          handleDragOver
+        );
+
+
+        card.addEventListener(
+          "dragleave",
+          handleDragLeave
+        );
+
+
+        card.addEventListener(
+          "drop",
+          handleDrop
+        );
+
+
+        card.addEventListener(
+          "dragend",
+          handleDragEnd
+        );
+      }
+
+
+      /* ============================
+         DRAG HEADER
+      ============================ */
+
+      const dragHandle =
+        document.createElement(
+          "div"
+        );
+
+
+      dragHandle.className =
+        "drag-handle";
+
+
+      const orderNumber =
+        document.createElement(
+          "span"
+        );
+
+
+      orderNumber.className =
+        "order-number";
+
+
+      orderNumber.textContent =
+        draftIndex + 1;
+
+
+      const dragSymbol =
+        document.createElement(
+          "span"
+        );
+
+
+      dragSymbol.className =
+        "drag-symbol";
+
+
+      dragSymbol.textContent =
+        "☰";
+
+
+      const dragLabel =
+        document.createElement(
+          "span"
+        );
+
+
+      dragLabel.className =
+        "drag-label";
+
+
+      dragLabel.textContent =
+        currentFilter === "all"
+
+          ? "Drag to reorder"
+
+          : "Playback position";
+
+
+      dragHandle.appendChild(
+        orderNumber
       );
 
-      card.addEventListener(
-        "dragover",
-        handleDragOver
+
+      dragHandle.appendChild(
+        dragSymbol
       );
 
-      card.addEventListener(
-        "dragleave",
-        handleDragLeave
+
+      dragHandle.appendChild(
+        dragLabel
       );
 
-      card.addEventListener(
-        "drop",
-        handleDrop
+
+      /* ============================
+         IMAGE
+      ============================ */
+
+      const imageWrap =
+        document.createElement(
+          "div"
+        );
+
+
+      imageWrap.className =
+        "image-wrap";
+
+
+      const image =
+        document.createElement(
+          "img"
+        );
+
+
+      image.src =
+        `${file.download_url}?v=${Date.now()}`;
+
+
+      image.alt =
+        file.name;
+
+
+      image.draggable =
+        false;
+
+
+      const overlay =
+        document.createElement(
+          "div"
+        );
+
+
+      overlay.className =
+        "hidden-overlay";
+
+
+      const overlayText =
+        document.createElement(
+          "span"
+        );
+
+
+      overlayText.textContent =
+        "HIDDEN";
+
+
+      overlay.appendChild(
+        overlayText
       );
 
-      card.addEventListener(
-        "dragend",
-        handleDragEnd
+
+      imageWrap.appendChild(
+        image
+      );
+
+
+      imageWrap.appendChild(
+        overlay
+      );
+
+
+      /* ============================
+         INFO
+      ============================ */
+
+      const info =
+        document.createElement(
+          "div"
+        );
+
+
+      info.className =
+        "info";
+
+
+      const checkbox =
+        document.createElement(
+          "input"
+        );
+
+
+      checkbox.type =
+        "checkbox";
+
+
+      checkbox.checked =
+        selected.has(
+          file.path
+        );
+
+
+      checkbox.onchange =
+        function() {
+
+          toggleFile(
+            file.path
+          );
+        };
+
+
+      const filename =
+        document.createElement(
+          "div"
+        );
+
+
+      filename.className =
+        "filename";
+
+
+      filename.textContent =
+        file.name;
+
+
+      const badge =
+        document.createElement(
+          "span"
+        );
+
+
+      badge.className =
+        isHidden
+
+          ? "state-badge hidden"
+
+          : "state-badge active";
+
+
+      badge.textContent =
+        isHidden
+
+          ? "HIDDEN"
+
+          : "ACTIVE";
+
+
+      info.appendChild(
+        checkbox
+      );
+
+
+      info.appendChild(
+        filename
+      );
+
+
+      info.appendChild(
+        badge
+      );
+
+
+      /* ============================
+         ACTIONS
+      ============================ */
+
+      const actions =
+        document.createElement(
+          "div"
+        );
+
+
+      actions.className =
+        "card-actions";
+
+
+      /* UP */
+
+      const upButton =
+        document.createElement(
+          "button"
+        );
+
+
+      upButton.className =
+        "move-button";
+
+
+      upButton.textContent =
+        "↑";
+
+
+      upButton.title =
+        "Move earlier";
+
+
+      upButton.disabled =
+        currentFilter !== "all"
+        ||
+        draftIndex === 0
+        ||
+        orderSaveBusy;
+
+
+      upButton.onclick =
+        function() {
+
+          moveSlide(
+            file.name,
+            -1
+          );
+        };
+
+
+      /* DOWN */
+
+      const downButton =
+        document.createElement(
+          "button"
+        );
+
+
+      downButton.className =
+        "move-button";
+
+
+      downButton.textContent =
+        "↓";
+
+
+      downButton.title =
+        "Move later";
+
+
+      downButton.disabled =
+        currentFilter !== "all"
+        ||
+        draftIndex ===
+          draftSlides.length - 1
+        ||
+        orderSaveBusy;
+
+
+      downButton.onclick =
+        function() {
+
+          moveSlide(
+            file.name,
+            1
+          );
+        };
+
+
+      /* HIDE / SHOW */
+
+      const visibilityButton =
+        document.createElement(
+          "button"
+        );
+
+
+      visibilityButton.className =
+        isHidden
+          ? "success"
+          : "warning";
+
+
+      visibilityButton.textContent =
+        isHidden
+          ? "Show"
+          : "Hide";
+
+
+      visibilityButton.onclick =
+        function() {
+
+          if (isHidden) {
+
+            showSlide(
+              file.name
+            );
+
+          } else {
+
+            hideSlide(
+              file.name
+            );
+          }
+        };
+
+
+      actions.appendChild(
+        upButton
+      );
+
+
+      actions.appendChild(
+        downButton
+      );
+
+
+      actions.appendChild(
+        visibilityButton
+      );
+
+
+      card.appendChild(
+        dragHandle
+      );
+
+
+      card.appendChild(
+        imageWrap
+      );
+
+
+      card.appendChild(
+        info
+      );
+
+
+      card.appendChild(
+        actions
+      );
+
+
+      grid.appendChild(
+        card
       );
     }
+  );
 
-
-    /* DRAG HANDLE */
-
-    const dragHandle =
-      document.createElement("div");
-
-    dragHandle.className =
-      "drag-handle";
-
-    const orderNumber =
-      document.createElement("span");
-
-    orderNumber.className =
-      "order-number";
-
-    orderNumber.textContent =
-      manifestIndex + 1;
-
-    const dragSymbol =
-      document.createElement("span");
-
-    dragSymbol.className =
-      "drag-symbol";
-
-    dragSymbol.textContent =
-      "☰";
-
-    const dragLabel =
-      document.createElement("span");
-
-    dragLabel.className =
-      "drag-label";
-
-    dragLabel.textContent =
-      currentFilter === "all"
-        ? "Drag to reorder"
-        : "Playback position";
-
-    dragHandle.appendChild(orderNumber);
-    dragHandle.appendChild(dragSymbol);
-    dragHandle.appendChild(dragLabel);
-
-
-    /* IMAGE */
-
-    const imageWrap =
-      document.createElement("div");
-
-    imageWrap.className =
-      "image-wrap";
-
-    const image =
-      document.createElement("img");
-
-    image.src =
-      `${file.download_url}?v=${Date.now()}`;
-
-    image.alt =
-      file.name;
-
-    /*
-      Prevent browser from trying to drag the image
-      instead of the card.
-    */
-
-    image.draggable = false;
-
-    const overlay =
-      document.createElement("div");
-
-    overlay.className =
-      "hidden-overlay";
-
-    const overlayText =
-      document.createElement("span");
-
-    overlayText.textContent =
-      "HIDDEN";
-
-    overlay.appendChild(
-      overlayText
-    );
-
-    imageWrap.appendChild(image);
-    imageWrap.appendChild(overlay);
-
-
-    /* INFO */
-
-    const info =
-      document.createElement("div");
-
-    info.className =
-      "info";
-
-    const checkbox =
-      document.createElement("input");
-
-    checkbox.type =
-      "checkbox";
-
-    checkbox.checked =
-      selected.has(file.path);
-
-    checkbox.onchange =
-      function() {
-        toggleFile(file.path);
-      };
-
-    const filename =
-      document.createElement("div");
-
-    filename.className =
-      "filename";
-
-    filename.textContent =
-      file.name;
-
-    const badge =
-      document.createElement("span");
-
-    badge.className =
-      isHidden
-        ? "state-badge hidden"
-        : "state-badge active";
-
-    badge.textContent =
-      isHidden
-        ? "HIDDEN"
-        : "ACTIVE";
-
-    info.appendChild(checkbox);
-    info.appendChild(filename);
-    info.appendChild(badge);
-
-
-    /* ACTIONS */
-
-    const actions =
-      document.createElement("div");
-
-    actions.className =
-      "card-actions";
-
-
-    /* UP */
-
-    const upButton =
-      document.createElement("button");
-
-    upButton.className =
-      "move-button";
-
-    upButton.textContent =
-      "↑";
-
-    upButton.title =
-      "Move earlier";
-
-    upButton.disabled =
-      currentFilter !== "all" ||
-      manifestIndex === 0 ||
-      orderSaveBusy;
-
-    upButton.onclick =
-      function() {
-        moveSlide(file.name, -1);
-      };
-
-
-    /* DOWN */
-
-    const downButton =
-      document.createElement("button");
-
-    downButton.className =
-      "move-button";
-
-    downButton.textContent =
-      "↓";
-
-    downButton.title =
-      "Move later";
-
-    downButton.disabled =
-      currentFilter !== "all" ||
-      manifestIndex ===
-        manifestSlides.length - 1 ||
-      orderSaveBusy;
-
-    downButton.onclick =
-      function() {
-        moveSlide(file.name, 1);
-      };
-
-
-    /* HIDE / SHOW */
-
-    const visibilityButton =
-      document.createElement("button");
-
-    visibilityButton.className =
-      isHidden
-        ? "success"
-        : "warning";
-
-    visibilityButton.textContent =
-      isHidden
-        ? "Show"
-        : "Hide";
-
-    visibilityButton.onclick =
-      function() {
-
-        if (isHidden) {
-          showSlide(file.name);
-        } else {
-          hideSlide(file.name);
-        }
-      };
-
-
-    actions.appendChild(upButton);
-    actions.appendChild(downButton);
-    actions.appendChild(
-      visibilityButton
-    );
-
-    card.appendChild(dragHandle);
-    card.appendChild(imageWrap);
-    card.appendChild(info);
-    card.appendChild(actions);
-
-    grid.appendChild(card);
-  });
 
   updateSelection();
+
+  updateOrderControls();
 }
 
 
+
 /* =====================================================
-   REORDER - BUTTONS
+   MOVE WITH ↑ ↓
 ===================================================== */
 
-async function moveSlide(
+function moveSlide(
   fileName,
   direction
 ) {
 
   if (
-    orderSaveBusy ||
+    orderSaveBusy
+    ||
     currentFilter !== "all"
   ) {
     return;
   }
 
+
   const oldIndex =
-    manifestSlides.indexOf(fileName);
+    draftSlides.indexOf(
+      fileName
+    );
+
 
   const newIndex =
     oldIndex + direction;
 
+
   if (
-    oldIndex < 0 ||
-    newIndex < 0 ||
-    newIndex >= manifestSlides.length
+    oldIndex < 0
+    ||
+    newIndex < 0
+    ||
+    newIndex >=
+      draftSlides.length
   ) {
+
     return;
   }
 
-  const previousOrder =
-    [...manifestSlides];
 
-  manifestSlides.splice(
+  draftSlides.splice(
     oldIndex,
     1
   );
 
-  manifestSlides.splice(
+
+  draftSlides.splice(
     newIndex,
     0,
     fileName
   );
 
+
   renderSlides();
 
-  const saved =
-    await saveNewOrder();
-
-  if (!saved) {
-    manifestSlides =
-      previousOrder;
-
-    renderSlides();
-  }
+  markOrderDirty();
 }
 
 
+
 /* =====================================================
-   REORDER - DRAG / DROP
+   DRAG / DROP
 ===================================================== */
 
-function handleDragStart(event) {
+function handleDragStart(
+  event
+) {
 
   if (
-    currentFilter !== "all" ||
+    currentFilter !== "all"
+    ||
     orderSaveBusy
   ) {
 
     event.preventDefault();
+
     return;
   }
 
+
   draggedName =
     this.dataset.name;
+
 
   this.classList.add(
     "dragging"
   );
 
+
   event.dataTransfer.effectAllowed =
     "move";
+
 
   event.dataTransfer.setData(
     "text/plain",
@@ -1758,364 +2800,461 @@ function handleDragStart(event) {
   );
 }
 
-function handleDragOver(event) {
+
+function handleDragOver(
+  event
+) {
 
   if (
-    currentFilter !== "all" ||
-    !draggedName ||
-    this.dataset.name === draggedName
+    currentFilter !== "all"
+    ||
+    !draggedName
+    ||
+    this.dataset.name ===
+      draggedName
   ) {
+
     return;
   }
 
+
   event.preventDefault();
+
 
   event.dataTransfer.dropEffect =
     "move";
 
+
   document
-    .querySelectorAll(".drag-target")
-    .forEach(card =>
-      card.classList.remove(
-        "drag-target"
-      )
+    .querySelectorAll(
+      ".drag-target"
+    )
+    .forEach(
+      card =>
+        card.classList.remove(
+          "drag-target"
+        )
     );
+
 
   this.classList.add(
     "drag-target"
   );
 }
 
+
 function handleDragLeave() {
+
   this.classList.remove(
     "drag-target"
   );
 }
 
-async function handleDrop(event) {
+
+function handleDrop(
+  event
+) {
 
   event.preventDefault();
+
 
   const targetName =
     this.dataset.name;
 
+
   this.classList.remove(
     "drag-target"
   );
 
+
   if (
-    !draggedName ||
-    draggedName === targetName ||
+    !draggedName
+    ||
+    draggedName ===
+      targetName
+    ||
     orderSaveBusy
   ) {
+
     return;
   }
 
-  const previousOrder =
-    [...manifestSlides];
 
   const fromIndex =
-    manifestSlides.indexOf(
+    draftSlides.indexOf(
       draggedName
     );
 
+
   const targetIndex =
-    manifestSlides.indexOf(
+    draftSlides.indexOf(
       targetName
     );
 
+
   if (
-    fromIndex < 0 ||
+    fromIndex < 0
+    ||
     targetIndex < 0
   ) {
+
     return;
   }
 
-  /*
-    Determine whether pointer was in upper/left
-    or lower/right half of the target card.
-
-    This lets the user drop before or after it.
-  */
 
   const rect =
     this.getBoundingClientRect();
 
+
   const isVerticalLayout =
     window.innerWidth <= 600;
 
+
   let insertAfter;
 
-  if (isVerticalLayout) {
+
+  if (
+    isVerticalLayout
+  ) {
 
     insertAfter =
-      event.clientY >
-      rect.top + rect.height / 2;
+      event.clientY
+      >
+      rect.top
+      +
+      rect.height / 2;
 
   } else {
 
-    /*
-      Grid layouts can wrap, so use the cursor's
-      vertical position first. If near the same row,
-      horizontal position gives intuitive placement.
-    */
 
     const verticalRatio =
-      (event.clientY - rect.top) /
+      (
+        event.clientY
+        -
+        rect.top
+      )
+      /
       rect.height;
 
-    if (verticalRatio < .35) {
-      insertAfter = false;
-    } else if (verticalRatio > .65) {
-      insertAfter = true;
-    } else {
+
+    if (
+      verticalRatio < .35
+    ) {
+
       insertAfter =
-        event.clientX >
-        rect.left + rect.width / 2;
+        false;
+
+    } else if (
+      verticalRatio > .65
+    ) {
+
+      insertAfter =
+        true;
+
+    } else {
+
+      insertAfter =
+        event.clientX
+        >
+        rect.left
+        +
+        rect.width / 2;
     }
   }
 
-  manifestSlides.splice(
+
+  const movingName =
+    draggedName;
+
+
+  draftSlides.splice(
     fromIndex,
     1
   );
 
-  let adjustedTargetIndex =
-    manifestSlides.indexOf(
+
+  const adjustedTargetIndex =
+    draftSlides.indexOf(
       targetName
     );
 
-  let insertIndex =
+
+  const insertIndex =
     insertAfter
+
       ? adjustedTargetIndex + 1
+
       : adjustedTargetIndex;
 
-  manifestSlides.splice(
+
+  draftSlides.splice(
     insertIndex,
     0,
-    draggedName
+    movingName
   );
 
-  draggedName = null;
+
+  draggedName =
+    null;
+
 
   renderSlides();
 
-  const saved =
-    await saveNewOrder();
-
-  if (!saved) {
-
-    manifestSlides =
-      previousOrder;
-
-    renderSlides();
-  }
+  markOrderDirty();
 }
+
 
 function handleDragEnd() {
 
-  draggedName = null;
+  draggedName =
+    null;
+
 
   document
     .querySelectorAll(
       ".dragging, .drag-target"
     )
-    .forEach(card => {
+    .forEach(
+      card => {
 
-      card.classList.remove(
-        "dragging"
-      );
+        card.classList.remove(
+          "dragging"
+        );
 
-      card.classList.remove(
-        "drag-target"
-      );
-    });
+
+        card.classList.remove(
+          "drag-target"
+        );
+      }
+    );
 }
 
-
-/* =====================================================
-   SAVE NEW ORDER
-===================================================== */
-
-async function saveNewOrder() {
-
-  if (orderSaveBusy) {
-    return false;
-  }
-
-  orderSaveBusy = true;
-
-  renderSlides();
-
-  setLiveStatus(
-    "waiting",
-    "Saving new slide order..."
-  );
-
-  const saved =
-    await saveConfig(
-      "Reorder Atrium slides"
-    );
-
-  if (!saved) {
-
-    orderSaveBusy = false;
-    renderSlides();
-
-    return false;
-  }
-
-  setLiveStatus(
-    "waiting",
-    "New order saved — Atrium updating..."
-  );
-
-  const deployed =
-    await waitForConfigDeployment(
-      "✓ Atrium is live with the new slide order"
-    );
-
-  orderSaveBusy = false;
-  renderSlides();
-
-  return deployed;
-}
 
 
 /* =====================================================
    SELECTION
 ===================================================== */
 
-function toggleFile(path) {
+function toggleFile(
+  path
+) {
 
-  if (selected.has(path)) {
+  if (
+    selected.has(path)
+  ) {
+
     selected.delete(path);
+
   } else {
+
     selected.add(path);
   }
 
+
   updateSelection();
 }
+
 
 function selectAllVisible() {
 
   getVisibleFiles()
-    .forEach(file =>
-      selected.add(file.path)
+    .forEach(
+      file =>
+        selected.add(
+          file.path
+        )
     );
+
 
   updateSelection();
 }
+
 
 function clearSelection() {
 
   selected.clear();
+
   updateSelection();
 }
 
+
 function updateSelection() {
 
-  document.getElementById(
-    "count"
-  ).textContent =
-    selected.size;
+  document
+    .getElementById(
+      "count"
+    )
+    .textContent =
+      selected.size;
 
-  document.getElementById(
-    "deleteButton"
-  ).disabled =
-    selected.size === 0;
 
   document
-    .querySelectorAll(".card")
-    .forEach(card => {
+    .getElementById(
+      "deleteButton"
+    )
+    .disabled =
+      selected.size === 0;
 
-      const checkbox =
-        card.querySelector(
-          'input[type="checkbox"]'
-        );
 
-      if (checkbox) {
-        checkbox.checked =
-          selected.has(
-            card.dataset.path
+  document
+    .querySelectorAll(
+      ".card"
+    )
+    .forEach(
+      card => {
+
+        const checkbox =
+          card.querySelector(
+            'input[type="checkbox"]'
           );
+
+
+        if (checkbox) {
+
+          checkbox.checked =
+            selected.has(
+              card.dataset.path
+            );
+        }
       }
-    });
+    );
 }
+
 
 
 /* =====================================================
    HIDE
 ===================================================== */
 
-async function hideSlide(fileName) {
+async function hideSlide(
+  fileName
+) {
 
-  if (hiddenSlides.has(fileName)) {
+  if (
+    hiddenSlides.has(
+      fileName
+    )
+  ) {
     return;
   }
 
-  hiddenSlides.add(fileName);
+
+  hiddenSlides.add(
+    fileName
+  );
+
 
   renderSlides();
+
 
   setLiveStatus(
     "waiting",
     "Hiding slide — Atrium updating..."
   );
 
+
   const saved =
     await saveConfig(
       `Hide Atrium slide ${fileName}`
     );
 
+
   if (!saved) {
 
-    hiddenSlides.delete(fileName);
+    hiddenSlides.delete(
+      fileName
+    );
+
+
     renderSlides();
+
     return;
   }
+
 
   await waitForConfigDeployment(
     "✓ Slide is hidden on the Atrium"
   );
+
+
+  /*
+    If user was also rearranging,
+    restore draft warning.
+  */
+
+  if (
+    hasUnsavedOrderChanges()
+  ) {
+
+    updateOrderControls();
+  }
 }
+
 
 
 /* =====================================================
    SHOW
 ===================================================== */
 
-async function showSlide(fileName) {
+async function showSlide(
+  fileName
+) {
 
-  if (!hiddenSlides.has(fileName)) {
+  if (
+    !hiddenSlides.has(
+      fileName
+    )
+  ) {
     return;
   }
 
-  hiddenSlides.delete(fileName);
+
+  hiddenSlides.delete(
+    fileName
+  );
+
 
   renderSlides();
+
 
   setLiveStatus(
     "waiting",
     "Showing slide — Atrium updating..."
   );
 
+
   const saved =
     await saveConfig(
       `Show Atrium slide ${fileName}`
     );
 
+
   if (!saved) {
 
-    hiddenSlides.add(fileName);
+    hiddenSlides.add(
+      fileName
+    );
+
+
     renderSlides();
+
     return;
   }
+
 
   await waitForConfigDeployment(
     "✓ Slide is live on the Atrium"
   );
+
+
+  if (
+    hasUnsavedOrderChanges()
+  ) {
+
+    updateOrderControls();
+  }
 }
+
 
 
 /* =====================================================
@@ -2124,7 +3263,9 @@ async function showSlide(fileName) {
 
 async function deleteSelected() {
 
-  const token = getToken();
+  const token =
+    getToken();
+
 
   if (!token) {
 
@@ -2135,48 +3276,68 @@ async function deleteSelected() {
     return;
   }
 
+
   const selectedFiles =
     files.filter(
       file =>
-        selected.has(file.path)
+        selected.has(
+          file.path
+        )
     );
 
-  if (!selectedFiles.length) {
+
+  if (
+    !selectedFiles.length
+  ) {
     return;
   }
 
+
   const names =
     selectedFiles
-      .map(file => file.name)
+      .map(
+        file =>
+          file.name
+      )
       .join("\n");
+
 
   const confirmed =
     confirm(
       `Permanently delete ${selectedFiles.length} slide(s)?\n\n${names}\n\nUse Hide instead for slides you may reuse.`
     );
 
+
   if (!confirmed) {
     return;
   }
 
+
   let deleted = 0;
+
   let failed = 0;
 
+
   for (
-    const file of selectedFiles
+    const file
+    of selectedFiles
   ) {
+
 
     setStatus(
       `Deleting ${file.name}...`
     );
 
+
     try {
+
 
       const response =
         await fetch(
           `${API}/contents/${file.path}`,
           {
-            method: "DELETE",
+            method:
+              "DELETE",
 
             headers: {
 
@@ -2194,23 +3355,33 @@ async function deleteSelected() {
             },
 
             body:
-              JSON.stringify({
-                message:
-                  `Delete Atrium slide ${file.name}`,
-                sha: file.sha,
-                branch: BRANCH
-              })
+              JSON.stringify(
+                {
+                  message:
+                    `Delete Atrium slide ${file.name}`,
+
+                  sha:
+                    file.sha,
+
+                  branch:
+                    BRANCH
+                }
+              )
           }
         );
 
+
       if (
-        response.status === 401 ||
+        response.status === 401
+        ||
         response.status === 403
       ) {
 
         authorizationFailed();
+
         return;
       }
+
 
       if (!response.ok) {
 
@@ -2219,75 +3390,69 @@ async function deleteSelected() {
           await response.text()
         );
 
+
         failed++;
 
       } else {
 
+
         deleted++;
+
 
         hiddenSlides.delete(
           file.name
         );
 
-        /*
-          Remove from manifest WITHOUT re-sorting
-          remaining slides.
-        */
 
         manifestSlides =
           manifestSlides.filter(
             name =>
-              name !== file.name
+              name !==
+              file.name
+          );
+
+
+        draftSlides =
+          draftSlides.filter(
+            name =>
+              name !==
+              file.name
           );
       }
 
     } catch (error) {
 
       console.error(error);
+
       failed++;
     }
   }
 
-  if (deleted > 0) {
+
+  if (
+    deleted > 0
+  ) {
 
     await saveConfig(
       "Update Atrium manifest after deleting slides"
     );
   }
 
+
   selected.clear();
+
 
   await loadSlides();
 
-  /*
-    Keep surviving manifest order.
-    Append anything unexpected at end.
-  */
-
-  const actualNames =
-    new Set(
-      files.map(file => file.name)
-    );
-
-  manifestSlides =
-    manifestSlides.filter(
-      name => actualNames.has(name)
-    );
-
-  const manifestSet =
-    new Set(manifestSlides);
-
-  files
-    .map(file => file.name)
-    .filter(name => !manifestSet.has(name))
-    .sort(naturalNameSort)
-    .forEach(name =>
-      manifestSlides.push(name)
-    );
 
   renderSlides();
 
-  if (failed > 0) {
+  updateOrderControls();
+
+
+  if (
+    failed > 0
+  ) {
 
     alert(
       `${deleted} deleted. ${failed} failed.`
@@ -2295,16 +3460,19 @@ async function deleteSelected() {
 
   } else {
 
+
     setLiveStatus(
       "waiting",
       "Slides deleted — Atrium updating..."
     );
+
 
     await waitForConfigDeployment(
       "✓ Atrium is live with the updated slide list"
     );
   }
 }
+
 
 
 /* =====================================================
@@ -2316,54 +3484,71 @@ const dropZone =
     "dropZone"
   );
 
+
 const filePicker =
   document.getElementById(
     "filePicker"
   );
 
+
 [
   "dragenter",
   "dragover"
 ]
-.forEach(eventName => {
+.forEach(
+  eventName => {
 
-  dropZone.addEventListener(
-    eventName,
-    event => {
 
-      event.preventDefault();
-      event.stopPropagation();
+    dropZone.addEventListener(
+      eventName,
+      event => {
 
-      dropZone.classList.add(
-        "dragover"
-      );
-    }
-  );
-});
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        dropZone.classList.add(
+          "dragover"
+        );
+      }
+    );
+  }
+);
+
 
 [
   "dragleave",
   "drop"
 ]
-.forEach(eventName => {
+.forEach(
+  eventName => {
 
-  dropZone.addEventListener(
-    eventName,
-    event => {
 
-      event.preventDefault();
-      event.stopPropagation();
+    dropZone.addEventListener(
+      eventName,
+      event => {
 
-      dropZone.classList.remove(
-        "dragover"
-      );
-    }
-  );
-});
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        dropZone.classList.remove(
+          "dragover"
+        );
+      }
+    );
+  }
+);
+
 
 dropZone.addEventListener(
   "drop",
   event => {
+
 
     addUploadFiles(
       event.dataTransfer.files
@@ -2371,34 +3556,48 @@ dropZone.addEventListener(
   }
 );
 
+
 filePicker.addEventListener(
   "change",
   event => {
+
 
     addUploadFiles(
       event.target.files
     );
 
-    filePicker.value = "";
+
+    filePicker.value =
+      "";
   }
 );
+
 
 
 /* =====================================================
    UPLOAD QUEUE
 ===================================================== */
 
-function addUploadFiles(fileList) {
+function addUploadFiles(
+  fileList
+) {
 
   const incoming =
-    Array.from(fileList)
-      .filter(
-        file =>
-          /\.(jpg|jpeg|png|webp)$/i
-            .test(file.name)
-      );
+    Array.from(
+      fileList
+    )
+    .filter(
+      file =>
+        /\.(jpg|jpeg|png|webp)$/i
+          .test(
+            file.name
+          )
+    );
 
-  if (!incoming.length) {
+
+  if (
+    !incoming.length
+  ) {
 
     alert(
       "No JPG, PNG, or WebP images were found."
@@ -2407,31 +3606,37 @@ function addUploadFiles(fileList) {
     return;
   }
 
-  incoming.forEach(file => {
 
-    const existingIndex =
-      uploadQueue.findIndex(
-        queued =>
-          queued.name.toLowerCase() ===
-          file.name.toLowerCase()
-      );
+  incoming.forEach(
+    file => {
 
-    if (existingIndex >= 0) {
 
-      uploadQueue[
-        existingIndex
-      ] = file;
+      const existingIndex =
+        uploadQueue.findIndex(
+          queued =>
+            queued.name.toLowerCase()
+            ===
+            file.name.toLowerCase()
+        );
 
-    } else {
 
-      uploadQueue.push(file);
+      if (
+        existingIndex >= 0
+      ) {
+
+        uploadQueue[
+          existingIndex
+        ] = file;
+
+      } else {
+
+        uploadQueue.push(
+          file
+        );
+      }
     }
-  });
+  );
 
-  /*
-    Sorting the temporary upload queue is fine.
-    It does NOT change existing playback order.
-  */
 
   uploadQueue.sort(
     (a, b) =>
@@ -2441,8 +3646,10 @@ function addUploadFiles(fileList) {
       )
   );
 
+
   renderUploadPreview();
 }
+
 
 
 /* =====================================================
@@ -2456,60 +3663,101 @@ function renderUploadPreview() {
       "uploadPreview"
     );
 
-  preview.innerHTML = "";
 
-  uploadQueue.forEach(file => {
+  preview.innerHTML =
+    "";
 
-    const card =
-      document.createElement("div");
 
-    card.className =
-      "preview-card";
+  uploadQueue.forEach(
+    file => {
 
-    const img =
-      document.createElement("img");
 
-    const objectURL =
-      URL.createObjectURL(file);
-
-    img.src = objectURL;
-
-    img.onload =
-      () =>
-        URL.revokeObjectURL(
-          objectURL
+      const card =
+        document.createElement(
+          "div"
         );
 
-    const name =
-      document.createElement("div");
 
-    name.className =
-      "preview-name";
+      card.className =
+        "preview-card";
 
-    name.textContent =
-      file.name;
 
-    card.appendChild(img);
-    card.appendChild(name);
+      const img =
+        document.createElement(
+          "img"
+        );
 
-    preview.appendChild(card);
-  });
 
-  document.getElementById(
-    "uploadActions"
-  )
-  .classList.toggle(
-    "visible",
-    uploadQueue.length > 0
+      const objectURL =
+        URL.createObjectURL(
+          file
+        );
+
+
+      img.src =
+        objectURL;
+
+
+      img.onload =
+        () =>
+          URL.revokeObjectURL(
+            objectURL
+          );
+
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+
+      name.className =
+        "preview-name";
+
+
+      name.textContent =
+        file.name;
+
+
+      card.appendChild(
+        img
+      );
+
+
+      card.appendChild(
+        name
+      );
+
+
+      preview.appendChild(
+        card
+      );
+    }
   );
 
-  document.getElementById(
-    "uploadProgress"
-  ).textContent =
-    uploadQueue.length
-      ? `${uploadQueue.length} image(s) ready to upload.`
-      : "";
+
+  document
+    .getElementById(
+      "uploadActions"
+    )
+    .classList.toggle(
+      "visible",
+      uploadQueue.length > 0
+    );
+
+
+  document
+    .getElementById(
+      "uploadProgress"
+    )
+    .textContent =
+      uploadQueue.length
+
+        ? `${uploadQueue.length} image(s) ready to upload.`
+
+        : "";
 }
+
 
 
 /* =====================================================
@@ -2519,46 +3767,66 @@ function renderUploadPreview() {
 function clearUploadQueue() {
 
   uploadQueue = [];
+
   renderUploadPreview();
 }
+
 
 
 /* =====================================================
    FILE -> BASE64
 ===================================================== */
 
-function fileToBase64(file) {
+function fileToBase64(
+  file
+) {
 
   return new Promise(
-    (resolve, reject) => {
+    (
+      resolve,
+      reject
+    ) => {
+
 
       const reader =
         new FileReader();
 
+
       reader.onload =
         () => {
+
+
           resolve(
-            reader.result.split(",")[1]
+            reader.result
+              .split(",")[1]
           );
         };
+
 
       reader.onerror =
         reject;
 
-      reader.readAsDataURL(file);
+
+      reader.readAsDataURL(
+        file
+      );
     }
   );
 }
+
 
 
 /* =====================================================
    SHA256
 ===================================================== */
 
-async function sha256Blob(blob) {
+async function sha256Blob(
+  blob
+) {
 
   const buffer =
     await blob.arrayBuffer();
+
 
   const digest =
     await crypto.subtle.digest(
@@ -2566,31 +3834,42 @@ async function sha256Blob(blob) {
       buffer
     );
 
+
   return Array.from(
-    new Uint8Array(digest)
+    new Uint8Array(
+      digest
+    )
   )
   .map(
     byte =>
       byte
         .toString(16)
-        .padStart(2, "0")
+        .padStart(
+          2,
+          "0"
+        )
   )
   .join("");
 }
+
 
 
 /* =====================================================
    FIND EXISTING FILE
 ===================================================== */
 
-function findExistingFile(name) {
+function findExistingFile(
+  name
+) {
 
   return files.find(
     file =>
-      file.name.toLowerCase() ===
+      file.name.toLowerCase()
+      ===
       name.toLowerCase()
   );
 }
+
 
 
 /* =====================================================
@@ -2599,7 +3878,9 @@ function findExistingFile(name) {
 
 async function uploadFiles() {
 
-  const token = getToken();
+  const token =
+    getToken();
+
 
   if (!token) {
 
@@ -2610,32 +3891,38 @@ async function uploadFiles() {
     return;
   }
 
-  if (!uploadQueue.length) {
+
+  if (
+    !uploadQueue.length
+  ) {
     return;
   }
+
 
   const confirmed =
     confirm(
       `Upload ${uploadQueue.length} image(s) to the Atrium?\n\nNew slides will be added to the end. Matching filenames will be replaced without changing their position.`
     );
 
+
   if (!confirmed) {
     return;
   }
+
 
   const uploadButton =
     document.getElementById(
       "uploadButton"
     );
 
-  uploadButton.disabled = true;
+
+  uploadButton.disabled =
+    true;
+
 
   const filesBeingUploaded =
     [...uploadQueue];
 
-  /*
-    Capture which names existed BEFORE upload.
-  */
 
   const existingNames =
     new Set(
@@ -2645,47 +3932,73 @@ async function uploadFiles() {
       )
     );
 
+
   let completed = 0;
+
   let failed = 0;
 
+
   for (
-    const file of filesBeingUploaded
+    const file
+    of filesBeingUploaded
   ) {
 
-    document.getElementById(
-      "uploadProgress"
-    ).textContent =
-      `Uploading ${file.name} (${completed + failed + 1} of ${filesBeingUploaded.length})...`;
+
+    document
+      .getElementById(
+        "uploadProgress"
+      )
+      .textContent =
+        `Uploading ${file.name} (${completed + failed + 1} of ${filesBeingUploaded.length})...`;
+
 
     try {
 
+
       const content =
-        await fileToBase64(file);
+        await fileToBase64(
+          file
+        );
+
 
       const existing =
-        findExistingFile(file.name);
+        findExistingFile(
+          file.name
+        );
+
 
       const payload = {
 
         message:
           existing
+
             ? `Update Atrium slide ${file.name}`
+
             : `Add Atrium slide ${file.name}`,
 
-        content: content,
-        branch: BRANCH
+
+        content:
+          content,
+
+
+        branch:
+          BRANCH
       };
 
+
       if (existing) {
+
         payload.sha =
           existing.sha;
       }
+
 
       const response =
         await fetch(
           `${API}/contents/${FOLDER}/${encodeURIComponent(file.name)}`,
           {
-            method: "PUT",
+            method:
+              "PUT",
 
             headers: {
 
@@ -2703,19 +4016,27 @@ async function uploadFiles() {
             },
 
             body:
-              JSON.stringify(payload)
+              JSON.stringify(
+                payload
+              )
           }
         );
 
+
       if (
-        response.status === 401 ||
+        response.status === 401
+        ||
         response.status === 403
       ) {
 
         authorizationFailed();
-        uploadButton.disabled = false;
+
+        uploadButton.disabled =
+          false;
+
         return;
       }
+
 
       if (!response.ok) {
 
@@ -2724,29 +4045,54 @@ async function uploadFiles() {
           await response.text()
         );
 
+
         failed++;
 
       } else {
 
+
         completed++;
 
+
         /*
-          New files go to the END.
-          Replacements stay where they already are.
+          New files are added to
+          BOTH saved and draft
+          order at the end.
+
+          Replacement stays where
+          it already is.
         */
 
         if (
           !existingNames.has(
             file.name.toLowerCase()
-          ) &&
-          !manifestSlides.includes(
-            file.name
           )
         ) {
 
-          manifestSlides.push(
-            file.name
-          );
+
+          if (
+            !manifestSlides.includes(
+              file.name
+            )
+          ) {
+
+            manifestSlides.push(
+              file.name
+            );
+          }
+
+
+          if (
+            !draftSlides.includes(
+              file.name
+            )
+          ) {
+
+            draftSlides.push(
+              file.name
+            );
+          }
+
 
           existingNames.add(
             file.name.toLowerCase()
@@ -2757,90 +4103,123 @@ async function uploadFiles() {
     } catch (error) {
 
       console.error(error);
+
       failed++;
     }
   }
 
-  uploadButton.disabled = false;
+
+  uploadButton.disabled =
+    false;
+
 
   uploadQueue = [];
+
+
   renderUploadPreview();
+
 
   await loadSlides();
 
-  /*
-    Keep current playback order.
-    Only append files missing from manifest.
-  */
 
   const actualNameSet =
     new Set(
-      files.map(file => file.name)
+      files.map(
+        file =>
+          file.name
+      )
     );
+
 
   manifestSlides =
     manifestSlides.filter(
       name =>
-        actualNameSet.has(name)
+        actualNameSet.has(
+          name
+        )
     );
 
-  const manifestSet =
-    new Set(manifestSlides);
 
-  files
-    .map(file => file.name)
-    .filter(
+  draftSlides =
+    draftSlides.filter(
       name =>
-        !manifestSet.has(name)
-    )
-    .sort(naturalNameSort)
-    .forEach(name =>
-      manifestSlides.push(name)
+        actualNameSet.has(
+          name
+        )
     );
+
 
   hiddenSlides =
     new Set(
-      Array.from(hiddenSlides)
-        .filter(
-          name =>
-            actualNameSet.has(name)
-        )
+      Array.from(
+        hiddenSlides
+      )
+      .filter(
+        name =>
+          actualNameSet.has(
+            name
+          )
+      )
     );
+
 
   await saveConfig(
     "Update Atrium slide manifest"
   );
 
+
   renderSlides();
 
-  if (failed > 0) {
 
-    document.getElementById(
-      "uploadProgress"
-    ).textContent =
-      `${completed} uploaded. ${failed} failed.`;
+  if (
+    failed > 0
+  ) {
+
+
+    document
+      .getElementById(
+        "uploadProgress"
+      )
+      .textContent =
+        `${completed} uploaded. ${failed} failed.`;
+
 
     alert(
       `${completed} image(s) uploaded. ${failed} failed.`
     );
 
+
     return;
   }
 
-  document.getElementById(
-    "uploadProgress"
-  ).textContent =
-    `${completed} image(s) uploaded successfully.`;
+
+  document
+    .getElementById(
+      "uploadProgress"
+    )
+    .textContent =
+      `${completed} image(s) uploaded successfully.`;
+
 
   setLiveStatus(
     "waiting",
     "Slides uploaded — Atrium updating..."
   );
 
+
   await waitForAtriumFile(
     filesBeingUploaded[0]
   );
+
+
+  if (
+    hasUnsavedOrderChanges()
+  ) {
+
+    updateOrderControls();
+  }
 }
+
 
 
 /* =====================================================
@@ -2853,28 +4232,40 @@ async function waitForAtriumFile(
 
   let localHash;
 
+
   try {
+
 
     localHash =
       await sha256Blob(
         uploadedFile
       );
 
+
   } catch (error) {
 
+
     console.error(error);
+
 
     setLiveStatus(
       "error",
       "Upload succeeded, but live verification could not start."
     );
 
+
     return;
   }
 
-  await sleep(4000);
 
-  const maxChecks = 30;
+  await sleep(
+    4000
+  );
+
+
+  const maxChecks =
+    30;
+
 
   for (
     let attempt = 1;
@@ -2882,39 +4273,53 @@ async function waitForAtriumFile(
     attempt++
   ) {
 
+
     try {
+
 
       const response =
         await fetch(
           `${ATRIUM_URL}/slides/${encodeURIComponent(uploadedFile.name)}?deploycheck=${Date.now()}`,
           {
-            cache: "no-store"
+            cache:
+              "no-store"
           }
         );
 
-      if (response.ok) {
+
+      if (
+        response.ok
+      ) {
+
 
         const liveBlob =
           await response.blob();
+
 
         const liveHash =
           await sha256Blob(
             liveBlob
           );
 
+
         if (
-          liveHash === localHash
+          liveHash ===
+          localHash
         ) {
+
 
           await waitForConfigDeployment(
             "✓ Atrium is live with the new slides"
           );
 
+
           return;
         }
       }
 
+
     } catch (error) {
+
 
       console.log(
         "Waiting for Atrium...",
@@ -2922,19 +4327,25 @@ async function waitForAtriumFile(
       );
     }
 
+
     setLiveStatus(
       "waiting",
       `Atrium updating... check ${attempt} of ${maxChecks}`
     );
 
-    await sleep(4000);
+
+    await sleep(
+      4000
+    );
   }
+
 
   setLiveStatus(
     "error",
     "Upload succeeded, but the live Atrium update could not be confirmed yet."
   );
 }
+
 
 
 /* =====================================================
@@ -2946,21 +4357,35 @@ async function waitForConfigDeployment(
     "✓ Atrium is live with the current slide list"
 ) {
 
+
   /*
-    DO NOT sort expectedSlides.
-    Exact order must match.
+    We compare against the
+    SAVED/LIVE manifest.
+
+    Not the draft.
   */
 
   const expectedSlides =
     [...manifestSlides];
 
+
   const expectedHidden =
-    Array.from(hiddenSlides)
-      .sort(naturalNameSort);
+    Array.from(
+      hiddenSlides
+    )
+    .sort(
+      naturalNameSort
+    );
 
-  await sleep(3000);
 
-  const maxChecks = 30;
+  await sleep(
+    3000
+  );
+
+
+  const maxChecks =
+    30;
+
 
   for (
     let attempt = 1;
@@ -2968,55 +4393,86 @@ async function waitForConfigDeployment(
     attempt++
   ) {
 
+
     try {
+
 
       const response =
         await fetch(
           `${ATRIUM_URL}/${CONFIG_PATH}?deploycheck=${Date.now()}`,
           {
-            cache: "no-store"
+            cache:
+              "no-store"
           }
         );
 
-      if (response.ok) {
+
+      if (
+        response.ok
+      ) {
+
 
         const config =
           await response.json();
 
-        /*
-          Again: do NOT sort liveSlides.
-          We're verifying exact playback order.
-        */
 
         const liveSlides =
-          Array.isArray(config.slides)
+          Array.isArray(
+            config.slides
+          )
+
             ? [...config.slides]
+
             : [];
+
 
         const liveHidden =
-          Array.isArray(config.hidden)
+          Array.isArray(
+            config.hidden
+          )
+
             ? [...config.hidden]
-                .sort(naturalNameSort)
+                .sort(
+                  naturalNameSort
+                )
+
             : [];
 
+
         if (
-          JSON.stringify(liveSlides) ===
-            JSON.stringify(expectedSlides)
+          JSON.stringify(
+            liveSlides
+          )
+          ===
+          JSON.stringify(
+            expectedSlides
+          )
+
           &&
-          JSON.stringify(liveHidden) ===
-            JSON.stringify(expectedHidden)
+
+          JSON.stringify(
+            liveHidden
+          )
+          ===
+          JSON.stringify(
+            expectedHidden
+          )
         ) {
+
 
           setLiveStatus(
             "live",
             successMessage
           );
 
+
           return true;
         }
       }
 
+
     } catch (error) {
+
 
       console.log(
         "Waiting for Atrium manifest...",
@@ -3024,21 +4480,28 @@ async function waitForConfigDeployment(
       );
     }
 
+
     setLiveStatus(
       "waiting",
       `Atrium updating... check ${attempt} of ${maxChecks}`
     );
 
-    await sleep(4000);
+
+    await sleep(
+      4000
+    );
   }
+
 
   setLiveStatus(
     "error",
     "GitHub updated, but the Atrium deployment could not be confirmed yet."
   );
 
+
   return false;
 }
+
 
 
 /* =====================================================
@@ -3049,12 +4512,17 @@ window.addEventListener(
   "DOMContentLoaded",
   () => {
 
+
     updateConnectionUI();
+
+
     loadEverything();
   }
 );
 
+
 </script>
 
 </body>
+
 </html>
