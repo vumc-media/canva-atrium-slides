@@ -779,7 +779,7 @@ button:disabled {
     <h1>VUMC Atrium Manager</h1>
 
     <p>
-      Enter the Staff Tools passkey to manage Atrium slides.
+      Enter your Atrium Manager password to manage slides.
     </p>
 
     <form id="loginForm">
@@ -788,7 +788,7 @@ button:disabled {
         id="passkeyInput"
         type="password"
         autocomplete="current-password"
-        placeholder="Staff Tools Passkey">
+        placeholder="Atrium Manager Password">
 
       <button
         id="loginButton"
@@ -1023,9 +1023,6 @@ button:disabled {
    CONFIGURATION
 ===================================================== */
 
-const GAS_URL =
-  "https://script.google.com/macros/s/AKfycbzHpOIjWgX-jiOMGwiCBrONrmym-9kMJDOQ4DA15re8d-_MUidnpXbIGCZYTqM_gAJV/exec";
-
 const API =
   "/.netlify/functions/atrium-api";
 
@@ -1035,8 +1032,6 @@ const ATRIUM_URL =
 const CONFIG_PATH =
   "slides-config.json";
 
-const FORM_TIMEOUT_MS = 45000;
-const POLL_INTERVAL_MS = 500;
 
 let manifestSlides = [];
 let draftSlides = [];
@@ -1051,253 +1046,6 @@ let configHadSlideList = false;
 let currentFilter = "all";
 let draggedName = null;
 let orderSaveBusy = false;
-
-
-/* =====================================================
-   GAS REQUEST SYSTEM
-===================================================== */
-
-function makeRequestId() {
-
-  if (
-    window.crypto &&
-    typeof window.crypto.randomUUID === "function"
-  ) {
-    return window.crypto.randomUUID();
-  }
-
-  return (
-    Date.now().toString(36) +
-    "-" +
-    Math.random().toString(36).slice(2)
-  );
-}
-
-
-function submitHiddenPost(
-  action,
-  payload,
-  requestId
-) {
-
-  let frame =
-    document.getElementById(
-      "vumcGasPostFrame"
-    );
-
-  if (!frame) {
-
-    frame =
-      document.createElement("iframe");
-
-    frame.id =
-      "vumcGasPostFrame";
-
-    frame.name =
-      "vumcGasPostFrame";
-
-    frame.setAttribute(
-      "aria-hidden",
-      "true"
-    );
-
-    Object.assign(
-      frame.style,
-      {
-        position: "fixed",
-        left: "-10000px",
-        top: "-10000px",
-        width: "1px",
-        height: "1px",
-        border: "0",
-        opacity: "0",
-        pointerEvents: "none"
-      }
-    );
-
-    document.body.appendChild(frame);
-  }
-
-
-  const form =
-    document.createElement("form");
-
-  form.method = "POST";
-  form.action = GAS_URL;
-  form.target = frame.name;
-  form.style.display = "none";
-
-
-  const fields = {
-    requestId,
-    action,
-    payload:
-      JSON.stringify(payload || {})
-  };
-
-
-  Object.entries(fields)
-    .forEach(([name, value]) => {
-
-      const input =
-        document.createElement("input");
-
-      input.type = "hidden";
-      input.name = name;
-      input.value = value;
-
-      form.appendChild(input);
-    });
-
-
-  document.body.appendChild(form);
-
-  form.submit();
-
-  form.remove();
-}
-
-
-function jsonpPoll(requestId) {
-
-  return new Promise(
-    (resolve, reject) => {
-
-      const callbackName =
-        "__vumcAtrium_" +
-        requestId.replace(
-          /[^A-Za-z0-9_$]/g,
-          "_"
-        );
-
-      const script =
-        document.createElement("script");
-
-
-      function cleanup() {
-
-        try {
-          delete window[callbackName];
-        } catch (error) {}
-
-        if (script.parentNode) {
-          script.remove();
-        }
-      }
-
-
-      window[callbackName] =
-        function(data) {
-          cleanup();
-          resolve(data);
-        };
-
-
-      script.onerror =
-        function() {
-
-          cleanup();
-
-          reject(
-            new Error(
-              "Could not read the Staff Tools response."
-            )
-          );
-        };
-
-
-      const url =
-        new URL(GAS_URL);
-
-      url.searchParams.set(
-        "api",
-        "1"
-      );
-
-      url.searchParams.set(
-        "requestId",
-        requestId
-      );
-
-      url.searchParams.set(
-        "callback",
-        callbackName
-      );
-
-      url.searchParams.set(
-        "_",
-        String(Date.now())
-      );
-
-      script.src =
-        url.toString();
-
-      document.head.appendChild(
-        script
-      );
-    }
-  );
-}
-
-
-async function gasRequest(
-  action,
-  payload = {},
-  timeoutMs = FORM_TIMEOUT_MS
-) {
-
-  const requestId =
-    makeRequestId();
-
-  submitHiddenPost(
-    action,
-    payload,
-    requestId
-  );
-
-  const started =
-    Date.now();
-
-
-  while (
-    Date.now() - started <
-    timeoutMs
-  ) {
-
-    await sleep(
-      POLL_INTERVAL_MS
-    );
-
-    let envelope;
-    try {
-      envelope = await jsonpPoll(requestId);
-    } catch (error) {
-      // A temporary JSONP/network failure should not abort the
-      // entire login. Keep polling until the request timeout.
-      console.warn("Staff Tools polling retry:", error.message);
-      continue;
-    }
-
-    if (
-      envelope &&
-      envelope.ready
-    ) {
-
-      return (
-        envelope.result ||
-        {
-          success: false,
-          error:
-            "No result returned."
-        }
-      );
-    }
-  }
-
-  throw new Error(
-    "Staff Tools did not return a readable response within 45 seconds. Check the Apps Script deployment and its access settings."
-  );
-}
 
 
 /* =====================================================
@@ -1549,7 +1297,7 @@ loginForm.addEventListener(
     if (!passkey) {
 
       showAuthMessage(
-        "Enter the Staff Tools passkey.",
+        "Enter your Atrium Manager password.",
         true
       );
 
@@ -1567,138 +1315,18 @@ loginForm.addEventListener(
 
     try {
 
-      /* ---------------------------------------------
-         1. Validate normal Staff Tools passkey
-      --------------------------------------------- */
-
-      const login =
-        await gasRequest(
-          "staffLogin",
-          {
-            passkey
-          }
-        );
-
-
-      if (
-        !login ||
-        login.success !== true ||
-        !login.token
-      ) {
-
-        throw new Error(
-          (
-            login &&
-            login.error
-          ) ||
-          "The Staff Tools passkey was not accepted."
-        );
-      }
-
-
-      /* ---------------------------------------------
-         2. Ask GAS for a short-lived one-time handoff
-      --------------------------------------------- */
-
-      const handoff =
-        await gasRequest(
-          "createAtriumHandoff",
-          {
-            token:
-              login.token
-          }
-        );
-
-
-      if (
-        !handoff ||
-        handoff.success !== true
-      ) {
-
-        throw new Error(
-          (
-            handoff &&
-            handoff.error
-          ) ||
-          "Atrium authorization could not be created."
-        );
-      }
-
-
-      const handoffCode =
-        handoff.code ||
-        handoff.handoff ||
-        handoff.handoffCode;
-
-
-      if (!handoffCode) {
-
-        throw new Error(
-          "Atrium authorization did not return a handoff code."
-        );
-      }
-
-
-      /* ---------------------------------------------
-         3. Redeem handoff at Netlify.
-
-         Netlify creates HttpOnly session cookie.
-      --------------------------------------------- */
-
-      const redeemResponse =
-        await fetch(
-          API,
-          {
-            method: "POST",
-
-            credentials:
-              "same-origin",
-
-            cache:
-              "no-store",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body:
-              JSON.stringify({
-                action:
-                  "redeem-handoff",
-
-                code:
-                  handoffCode
-              })
-          }
-        );
-
-
+      const redeemResponse = await fetch(API, {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "login", passkey })
+      });
       let redeem = {};
-
-      try {
-        redeem =
-          await redeemResponse.json();
-      } catch (error) {}
-
-
-      if (
-        !redeemResponse.ok ||
-        redeem.success !== true
-      ) {
-
-        throw new Error(
-          redeem.error ||
-          "Atrium authorization was not accepted."
-        );
+      try { redeem = await redeemResponse.json(); } catch (_) {}
+      if (!redeemResponse.ok || redeem.authorized !== true) {
+        throw new Error(redeem.error || "Atrium Manager sign-in failed.");
       }
-
-
-      /*
-       * We deliberately DO NOT save
-       * the staff token or handoff code.
-       */
-
 
       passkeyInput.value = "";
 
