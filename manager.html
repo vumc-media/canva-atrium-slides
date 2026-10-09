@@ -1268,10 +1268,15 @@ async function gasRequest(
       POLL_INTERVAL_MS
     );
 
-    const envelope =
-      await jsonpPoll(
-        requestId
-      );
+    let envelope;
+    try {
+      envelope = await jsonpPoll(requestId);
+    } catch (error) {
+      // A temporary JSONP/network failure should not abort the
+      // entire login. Keep polling until the request timeout.
+      console.warn("Staff Tools polling retry:", error.message);
+      continue;
+    }
 
     if (
       envelope &&
@@ -1290,7 +1295,7 @@ async function gasRequest(
   }
 
   throw new Error(
-    "The Staff Tools request timed out."
+    "Staff Tools did not return a readable response within 45 seconds. Check the Apps Script deployment and its access settings."
   );
 }
 
