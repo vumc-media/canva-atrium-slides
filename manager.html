@@ -779,7 +779,7 @@ button:disabled {
     <h1>VUMC Atrium Manager</h1>
 
     <p>
-      Enter your Atrium Manager password to manage slides.
+      Enter your VUMC Staff Tools password to manage slides.
     </p>
 
     <form id="loginForm">
@@ -788,7 +788,7 @@ button:disabled {
         id="passkeyInput"
         type="password"
         autocomplete="current-password"
-        placeholder="Atrium Manager Password">
+        placeholder="Staff Tools Password">
 
       <button
         id="loginButton"
@@ -1023,391 +1023,51 @@ button:disabled {
    CONFIGURATION
 ===================================================== */
 
-const API =
-  "/.netlify/functions/atrium-api";
-
-const ATRIUM_URL =
-  "https://canvaslides.netlify.app";
-
-const CONFIG_PATH =
-  "slides-config.json";
-
-
-let manifestSlides = [];
-let draftSlides = [];
-let files = [];
-let selected = new Set();
-let uploadQueue = [];
-let hiddenSlides = new Set();
-
-let configSha = null;
-let configHadSlideList = false;
-
-let currentFilter = "all";
-let draggedName = null;
-let orderSaveBusy = false;
-
-
-/* =====================================================
-   NETLIFY API
-===================================================== */
-
-async function apiRequest(
-  action,
-  body = null
-) {
-
-  const options = {
-    cache: "no-store",
-    credentials: "same-origin"
-  };
-
-  if (body !== null) {
-
-    options.method = "POST";
-
-    options.headers = {
-      "Content-Type":
-        "application/json"
-    };
-
-    options.body =
-      JSON.stringify({
-        action,
-        ...body
-      });
-
-  } else {
-
-    options.method = "GET";
-  }
-
-
-  const url =
-    body === null
-      ? `${API}?action=${encodeURIComponent(action)}&v=${Date.now()}`
-      : API;
-
-
-  const response =
-    await fetch(
-      url,
-      options
-    );
-
-
-  let data = {};
-
-  try {
-    data =
-      await response.json();
-  } catch (error) {}
-
-
-  if (
-    response.status === 401 ||
-    response.status === 403 ||
-    data.authRequired === true
-  ) {
-
-    showLogin();
-
-    throw new Error(
-      "AUTH_REQUIRED"
-    );
-  }
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      data.error ||
-      data.message ||
-      `Atrium API returned ${response.status}`
-    );
-  }
-
-
-  return data;
+const ATRIUM_URL = "https://slides.versaillesumc.org";
+const CONFIG_PATH = "slides-config.json";
+const BRIDGE_URL = "https://script.google.com/macros/s/AKfycbzHpOIjWgX-jiOMGwiCBrONrmym-9kMJDOQ4DA15re8d-_MUidnpXbIGCZYTqM_gAJV/exec?bridge=1";
+let manifestSlides=[],draftSlides=[],files=[],selected=new Set(),uploadQueue=[],hiddenSlides=new Set();
+let configSha=null,configHadSlideList=false,currentFilter="all",draggedName=null,orderSaveBusy=false;
+let staffToken="",staffPassword="",bridgeWindow=null,bridgeOrigin="";
+const pendingBridge=new Map();
+const authScreen=document.getElementById("authScreen"),managerApp=document.getElementById("managerApp"),loginForm=document.getElementById("loginForm"),passkeyInput=document.getElementById("passkeyInput"),loginButton=document.getElementById("loginButton"),authMessage=document.getElementById("authMessage"),logoutButton=document.getElementById("logoutButton");
+function showAuthMessage(message,isError=false){authMessage.textContent=message;authMessage.hidden=false;authMessage.classList.toggle("error",isError)}
+function clearAuthMessage(){authMessage.hidden=true;authMessage.textContent="";authMessage.classList.remove("error")}
+function showLogin(){staffToken="";staffPassword="";managerApp.hidden=true;authScreen.hidden=false;passkeyInput.value=""}
+function showManager(){authScreen.hidden=true;managerApp.hidden=false;clearAuthMessage()}
+window.addEventListener("message",event=>{
+ const msg=event.data;
+ if(!msg||typeof msg!=="object")return;
+ if(msg.type==="vumc-bridge-ready" && /^https:\/\/[^/]*(script\.google\.com|googleusercontent\.com)$/.test(event.origin)){bridgeWindow=event.source;bridgeOrigin=event.origin;return}
+ if(msg.type!=="vumc-bridge-response"||event.source!==bridgeWindow||event.origin!==bridgeOrigin)return;
+ const p=pendingBridge.get(msg.requestId);if(!p)return;
+ pendingBridge.delete(msg.requestId);clearTimeout(p.timer);p.resolve(msg.result);
+});
+const bridgeFrame=document.createElement("iframe");bridgeFrame.src=BRIDGE_URL;bridgeFrame.title="VUMC staff authorization";bridgeFrame.style.cssText="position:absolute;width:1px;height:1px;border:0;opacity:0;pointer-events:none";document.body.appendChild(bridgeFrame);
+async function bridgeCall(action,payload={}){
+ for(let n=0;!bridgeWindow&&n<100;n++)await new Promise(r=>setTimeout(r,100));
+ if(!bridgeWindow)throw new Error("Staff authorization bridge did not connect. Refresh this page.");
+ const requestId=crypto.randomUUID();
+ const result=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>{pendingBridge.delete(requestId);reject(new Error("Staff request timed out."))},45000);pendingBridge.set(requestId,{resolve,reject,timer});bridgeWindow.postMessage({type:"vumc-bridge-request",requestId,action,payload},bridgeOrigin)});
+ if(!result||result.success!==true){if(result&&result.authRequired){showLogin();throw new Error("AUTH_REQUIRED")}throw new Error(result&&result.error||"Atrium request failed.")}
+ return result;
 }
-
-
-/* =====================================================
-   AUTH SCREEN
-===================================================== */
-
-const authScreen =
-  document.getElementById(
-    "authScreen"
-  );
-
-const managerApp =
-  document.getElementById(
-    "managerApp"
-  );
-
-const loginForm =
-  document.getElementById(
-    "loginForm"
-  );
-
-const passkeyInput =
-  document.getElementById(
-    "passkeyInput"
-  );
-
-const loginButton =
-  document.getElementById(
-    "loginButton"
-  );
-
-const authMessage =
-  document.getElementById(
-    "authMessage"
-  );
-
-const logoutButton =
-  document.getElementById(
-    "logoutButton"
-  );
-
-
-function showAuthMessage(
-  message,
-  isError = false
-) {
-
-  authMessage.textContent =
-    message;
-
-  authMessage.hidden = false;
-
-  authMessage.classList.toggle(
-    "error",
-    isError
-  );
+async function apiRequest(action,body=null){
+ const names={config:"atriumConfig",list:"atriumList",upload:"atriumUpload",delete:"atriumDelete","save-config":"atriumSaveConfig"};
+ if(!names[action])throw new Error("Unsupported action: "+action);
+ const payload={...(body||{}),token:staffToken};if(body!==null)payload.passkey=staffPassword;
+ const result=await bridgeCall(names[action],payload);return action==="list"?result.files:result;
 }
-
-
-function clearAuthMessage() {
-
-  authMessage.hidden = true;
-  authMessage.textContent = "";
-
-  authMessage.classList.remove(
-    "error"
-  );
-}
-
-
-function showLogin() {
-
-  managerApp.hidden = true;
-  authScreen.hidden = false;
-
-  passkeyInput.value = "";
-
-  setTimeout(
-    () => passkeyInput.focus(),
-    50
-  );
-}
-
-
-function showManager() {
-
-  authScreen.hidden = true;
-  managerApp.hidden = false;
-
-  clearAuthMessage();
-}
-
-
-/* =====================================================
-   CHECK EXISTING SESSION
-===================================================== */
-
-async function checkSession() {
-
-  try {
-
-    const response =
-      await fetch(
-        `${API}?action=session&v=${Date.now()}`,
-        {
-          cache: "no-store",
-          credentials: "same-origin"
-        }
-      );
-
-    if (!response.ok) {
-      showLogin();
-      return false;
-    }
-
-    const data =
-      await response.json();
-
-    if (
-      data &&
-      data.authorized === true
-    ) {
-
-      showManager();
-
-      await loadEverything();
-
-      return true;
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Session check failed:",
-      error
-    );
-  }
-
-  showLogin();
-
-  return false;
-}
-
-
-/* =====================================================
-   LOGIN
-
-   Passkey -> Staff session -> one-time handoff ->
-   secure Netlify cookie.
-
-   No GitHub credential is stored in the browser.
-===================================================== */
-
-loginForm.addEventListener(
-  "submit",
-  async function(event) {
-
-    event.preventDefault();
-
-    clearAuthMessage();
-
-    const passkey =
-      passkeyInput.value.trim();
-
-    if (!passkey) {
-
-      showAuthMessage(
-        "Enter your Atrium Manager password.",
-        true
-      );
-
-      passkeyInput.focus();
-
-      return;
-    }
-
-
-    loginButton.disabled = true;
-
-    loginButton.textContent =
-      "Signing in…";
-
-
-    try {
-
-      const redeemResponse = await fetch(API, {
-        method: "POST",
-        credentials: "same-origin",
-        cache: "no-store",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "login", passkey })
-      });
-      let redeem = {};
-      try { redeem = await redeemResponse.json(); } catch (_) {}
-      if (!redeemResponse.ok || redeem.authorized !== true) {
-        throw new Error(redeem.error || "Atrium Manager sign-in failed.");
-      }
-
-      passkeyInput.value = "";
-
-      showManager();
-
-      await loadEverything();
-
-
-    } catch (error) {
-
-      console.error(
-        "Atrium login error:",
-        error
-      );
-
-      showAuthMessage(
-        error.message ||
-        "Atrium Manager could not sign in.",
-        true
-      );
-
-      passkeyInput.select();
-
-    } finally {
-
-      loginButton.disabled = false;
-
-      loginButton.textContent =
-        "Sign In";
-    }
-  }
-);
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-logoutButton.addEventListener(
-  "click",
-  async function() {
-
-    try {
-
-      await fetch(
-        API,
-        {
-          method: "POST",
-
-          credentials:
-            "same-origin",
-
-          cache:
-            "no-store",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify({
-              action: "logout"
-            })
-        }
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Logout error:",
-        error
-      );
-    }
-
-    selected.clear();
-
-    showLogin();
-  }
-);
-
+async function checkSession(){showLogin();return false}
+loginForm.addEventListener("submit",async event=>{
+ event.preventDefault();clearAuthMessage();const passkey=passkeyInput.value;
+ if(!passkey){showAuthMessage("Enter your Staff Tools password.",true);return}
+ loginButton.disabled=true;loginButton.textContent="Signing in…";
+ try{const response=await bridgeCall("staffLogin",{passkey});staffToken=response.token;staffPassword=passkey;passkeyInput.value="";showManager();await loadEverything()}
+ catch(error){showAuthMessage(error.message||"Unable to sign in.",true)}
+ finally{loginButton.disabled=false;loginButton.textContent="Sign In"}
+});
+logoutButton.addEventListener("click",async()=>{const token=staffToken;showLogin();selected.clear();try{await bridgeCall("staffLogout",{token})}catch(_){}});
 
 /* =====================================================
    STATUS
